@@ -67,7 +67,7 @@ img{display:block;max-width:100%}
   position:relative;margin:9px 10px 0;height:156px;overflow:hidden;border-radius:22px;color:#fff;
   background:
     linear-gradient(90deg,rgba(88,4,9,.92),rgba(166,14,22,.56),rgba(130,8,14,.14)),
-    url("https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Stadio_San_Nicola_Bari.jpg/960px-Stadio_San_Nicola_Bari.jpg") center 50%/cover no-repeat;
+    url("assets/bari-casarano-illustrazione.webp") center 50%/cover no-repeat;
   box-shadow:0 10px 26px rgba(0,0,0,.10)
 }
 .hero-inner{position:absolute;inset:0;padding:14px;display:flex;flex-direction:column;justify-content:flex-end}
@@ -362,6 +362,30 @@ img{display:block;max-width:100%}
   border-radius:15px;padding:10px
 }
 
+/* TB ID — account state made explicit */
+.account-shell{background:#fff;border:1px solid var(--line);border-radius:22px;padding:13px;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+.account-status{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 11px;border-radius:15px;background:#f6f7f8;margin-bottom:10px}
+.account-status-main{display:flex;align-items:center;gap:8px;min-width:0}
+.account-dot{width:10px;height:10px;flex:0 0 10px;border-radius:50%;background:#9da1a8;box-shadow:0 0 0 4px rgba(157,161,168,.13)}
+.account-dot.on{background:#22a35a;box-shadow:0 0 0 4px rgba(34,163,90,.14)}
+.account-status b{display:block;font-size:12px}.account-status small{display:block;color:var(--muted);font-size:9px;margin-top:2px}
+.account-mode{white-space:nowrap;border:1px solid #ddd;border-radius:999px;padding:5px 7px;font-size:8px;font-weight:900;color:#666;background:#fff}
+.account-mode.on{color:#187a43;border-color:#acd9bf;background:#effaf3}
+.profile-card{position:relative;align-items:flex-start}
+.profile-info{min-width:0;flex:1}
+.profile-handle{font-size:10px!important;color:var(--red)!important;font-weight:850}
+.account-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.account-actions button{border:1px solid #e4e4e6;background:#fff;border-radius:11px;padding:7px 9px;font-size:10px;font-weight:850;cursor:pointer}
+.account-actions .danger{color:#9e1118;background:#fff6f6;border-color:#f0c9cb}
+.profile-progress{margin-top:10px}
+.profile-progress-head{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:5px}
+.profile-progress-track{height:7px;border-radius:999px;background:#ececef;overflow:hidden}
+.profile-progress-fill{height:100%;width:72%;background:linear-gradient(90deg,var(--red),#ef5860);border-radius:inherit}
+.account-roadmap{margin-top:10px;padding:10px;border-radius:14px;background:#fff8e8;border:1px solid #f0d99d;font-size:10px;line-height:1.45;color:#74530b}
+.account-roadmap b{color:#543b06}
+.nav-account-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#a7a9ae;vertical-align:middle;margin-left:3px}
+.nav-account-dot.on{background:#22a35a}
+
 
 /* SEASON CALENDAR */
 .season-scroll{
@@ -649,11 +673,11 @@ img{display:block;max-width:100%}
   position:relative;z-index:3;text-align:center;font-size:10px;font-weight:950;letter-spacing:.05em;
   margin-bottom:10px;text-shadow:0 2px 5px rgba(0,0,0,.2)
 }
-.field-line{position:relative;z-index:3;display:grid;gap:6px;margin:10px 0}
+.field-line{position:relative;z-index:3;display:grid;gap:4px;margin:18px 0;align-items:start}
 .field-line.gk{grid-template-columns:1fr}
-.field-line.df{grid-template-columns:repeat(3,1fr)}
-.field-line.mf{grid-template-columns:repeat(5,1fr)}
-.field-line.fw{grid-template-columns:repeat(2,1fr);padding:0 10%}
+.field-line.df{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:16px}
+.field-line.mf{grid-template-columns:repeat(3,minmax(0,1fr));padding:0 8%}
+.field-line.fw{grid-template-columns:repeat(3,minmax(0,1fr));padding:0 5%;margin-bottom:4px}
 .field-player{text-align:center;min-width:0}
 .shirt{
   width:40px;height:40px;margin:0 auto 4px;border-radius:12px 12px 16px 16px;
@@ -667,6 +691,12 @@ img{display:block;max-width:100%}
   text-shadow:0 2px 5px rgba(0,0,0,.5)
 }
 .field-player small{display:block;font-size:8px;color:#e7f4ea;margin-top:1px}
+@media(max-width:390px){
+  .pitch-v6{padding-left:5px;padding-right:5px}
+  .shirt{width:36px;height:36px;font-size:13px}
+  .field-player b{font-size:9px}
+  .field-line.df{gap:2px}
+}
 
 /* roster stats */
 .roster-head-v6,.roster-row-v6{
@@ -931,8 +961,8 @@ img{display:block;max-width:100%}
     <div class="feed">
 
       <article class="post featured">
-        <div class="post-media" style="background-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Stadio_San_Nicola_Bari.jpg/960px-Stadio_San_Nicola_Bari.jpg')">
-          <span class="image-context">🏟 San Nicola · immagine di contesto Wikimedia Commons</span>
+        <div class="post-media" style="background-image:url('assets/bari-casarano-illustrazione.webp')">
+          <span class="image-context">🎨 Illustrazione editoriale originale TB · scena simbolica</span>
         </div>
         <div class="post-body">
           <div class="post-meta"><span class="badge official">✅ RISULTATO UFFICIALE</span><span class="post-time">oggi · 06:00</span></div>
@@ -944,6 +974,9 @@ img{display:block;max-width:100%}
       </article>
 
       <article class="post">
+        <div class="post-media" style="background-image:url('assets/altamura-bari-illustrazione.webp')">
+          <span class="image-context">🎨 Illustrazione editoriale originale TB · trasferta simbolica</span>
+        </div>
         <div class="post-body">
           <div class="post-meta"><span class="badge official">📅 PROSSIMA GARA</span><span class="post-time">verificato oggi</span></div>
           <h3>🚌 Venerdì 11 settembre: Altamura-Bari alle 21:00</h3>
@@ -954,6 +987,9 @@ img{display:block;max-width:100%}
       </article>
 
       <article class="post">
+        <div class="post-media" style="background-image:url('assets/mercato-bari-illustrazione.webp')">
+          <span class="image-context">🎨 Illustrazione editoriale originale TB · mercato</span>
+        </div>
         <div class="post-body">
           <div class="post-meta"><span class="badge market">✅ MERCATO UFFICIALE</span><span class="post-time">1 set</span></div>
           <h3>🆕 Bianchi e Della Morte sono biancorossi; Prisco arriva in prestito</h3>
@@ -1629,42 +1665,62 @@ img{display:block;max-width:100%}
   </div>
 
   <div class="section">
-    <div class="section-head"><h2>❤️ Diventa parte di TB</h2><small>beta locale</small></div>
-
-    <div class="join-card" id="joinCard">
-      <div class="join-grid">
-        <input id="joinNick" class="full" maxlength="24" placeholder="🐓 Il tuo nickname">
-        <input id="joinCity" maxlength="30" placeholder="📍 Città (facoltativa)">
-        <select id="joinYears">
-          <option value="">❤️ Da quanto segui il Bari?</option>
-          <option>Da meno di 5 anni</option>
-          <option>Da 5–10 anni</option>
-          <option>Da 10–20 anni</option>
-          <option>Da oltre 20 anni</option>
-          <option>Da sempre 😄</option>
-        </select>
-        <button class="primary full" onclick="joinCommunity()">🐓 Entra nella Community</button>
+    <div class="section-head"><h2>🪪 TB ID</h2><small>il tuo account community</small></div>
+    <div class="account-shell">
+      <div class="account-status" aria-live="polite">
+        <div class="account-status-main">
+          <span class="account-dot" id="accountDot"></span>
+          <div><b id="accountStatusTitle">Non hai effettuato l'accesso</b><small id="accountStatusText">Crea un profilo TB su questo dispositivo</small></div>
+        </div>
+        <span class="account-mode" id="accountMode">OFFLINE</span>
       </div>
-      <p style="font-size:10px;color:var(--muted);margin:8px 0 0">🔐 In questa beta il profilo resta solo sul dispositivo. Nella versione online useremo account reali e impostazioni privacy.</p>
-    </div>
 
-    <div class="profile-card" id="profileCard">
-      <div class="avatar">🐓</div>
-      <div class="profile-info">
-        <b id="profileNick">Tifoso TB</b>
-        <span id="profileMeta">Community biancorossa</span>
-        <div class="badge-row">
-          <span class="fan-badge">❤️ Biancorosso</span>
-          <span class="fan-badge">🐓 Community TB</span>
-          <span class="fan-badge" id="seniorityBadge">⚽ Nuovo membro</span>
+      <div class="join-card" id="joinCard">
+        <div class="join-grid">
+          <input id="joinNick" class="full" maxlength="24" placeholder="🐓 Scegli il tuo nickname" autocomplete="nickname">
+          <input id="joinCity" maxlength="30" placeholder="📍 Città (facoltativa)">
+          <select id="joinYears">
+            <option value="">❤️ Da quanto segui il Bari?</option>
+            <option>Da meno di 5 anni</option>
+            <option>Da 5–10 anni</option>
+            <option>Da 10–20 anni</option>
+            <option>Da oltre 20 anni</option>
+            <option>Da sempre 😄</option>
+          </select>
+          <button class="primary full" onclick="joinCommunity()">Crea il mio TB ID</button>
+        </div>
+        <p style="font-size:10px;color:var(--muted);margin:8px 0 0">🔐 <b>Anteprima sicura:</b> niente email o password. Il profilo resta solo in questo browser e non è ancora sincronizzato tra dispositivi.</p>
+      </div>
+
+      <div class="profile-card" id="profileCard">
+        <div class="avatar" id="profileAvatar">🐓</div>
+        <div class="profile-info">
+          <b id="profileNick">Tifoso TB</b>
+          <span class="profile-handle" id="profileHandle">@tifosotb · TB-0000</span>
+          <span id="profileMeta">Community biancorossa</span>
+          <div class="badge-row">
+            <span class="fan-badge">❤️ Biancorosso</span>
+            <span class="fan-badge">🐓 Community TB</span>
+            <span class="fan-badge" id="seniorityBadge">⚽ Nuovo membro</span>
+          </div>
+          <div class="profile-progress">
+            <div class="profile-progress-head"><span>Profilo TB</span><b id="profileProgressText">72% completo</b></div>
+            <div class="profile-progress-track"><div class="profile-progress-fill" id="profileProgressFill"></div></div>
+          </div>
+          <div class="account-actions">
+            <button onclick="editCommunityProfile()">✏️ Modifica</button>
+            <button onclick="switchView('community');document.getElementById('communityComposer').focus()">✍️ Nuovo post</button>
+            <button class="danger" onclick="logoutCommunity()">↪ Esci</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="community-stats">
-      <div class="cstat"><b id="statPosts">0</b><span>post tuoi</span></div>
-      <div class="cstat"><b id="statLikes">0</b><span>reazioni</span></div>
-      <div class="cstat"><b>5</b><span>temi seguiti</span></div>
+      <div class="community-stats">
+        <div class="cstat"><b id="statPosts">0</b><span>post tuoi</span></div>
+        <div class="cstat"><b id="statLikes">0</b><span>reazioni</span></div>
+        <div class="cstat"><b id="statTopics">5</b><span>temi seguiti</span></div>
+      </div>
+      <div class="account-roadmap"><b>🚧 Account online in preparazione.</b> Questa interfaccia mostra senza ambiguità quando sei loggato localmente. Il passo successivo è collegare autenticazione e database per usare lo stesso TB ID su telefono e PC.</div>
     </div>
   </div>
 
@@ -1721,8 +1777,8 @@ img{display:block;max-width:100%}
           <textarea id="predCommentInput" maxlength="400" placeholder="Perché secondo te finirà così? 🔴⚪"></textarea>
           <div style="margin-top:7px"><button class="primary" onclick="addPredictionComment()">Pubblica commento</button></div>
           <div class="pred-comments" id="predComments">
-            <div class="pred-comment"><b>🐓 CurvaVirtuale · 18 min</b><p>Io dico 2-0. Dopo Barletta mi aspetto una reazione forte. 🔥</p></div>
-            <div class="pred-comment"><b>⚽ SanNicola1985 · 31 min</b><p>1-1 per me. Il Picerno è partito bene e non sarà semplice.</p></div>
+            <div class="pred-comment"><b>🐓 CurvaVirtuale · oggi</b><p>Trasferta insidiosa: il successo sul Casarano può dare fiducia. 🔥</p></div>
+            <div class="pred-comment"><b>⚽ SanNicola1985 · oggi</b><p>Derby da affrontare con equilibrio. Servirà continuità per portare punti a casa.</p></div>
           </div>
         </div>
       </div>
@@ -1760,7 +1816,7 @@ img{display:block;max-width:100%}
           <div class="cp-avatar">⚽</div>
           <div class="cp-meta"><b>CurvaVirtuale</b><span>🗣 tifoseria · 32 min</span></div>
         </div>
-        <p>Io martedì voglio vedere soprattutto una reazione. Il risultato conta, ma dopo Barletta voglio una squadra che morda ogni pallone. 🔥🐓</p>
+        <p>La vittoria sul Casarano dà fiducia. Ad Altamura voglio vedere la stessa attenzione e più continuità per tutti i novanta minuti. 🔥🐓</p>
         <div class="cp-actions"><button onclick="communityLike(this)">❤️ 41</button><button>💬 12</button><button onclick="shareSite()">↗</button></div>
       </article>
 
@@ -1769,7 +1825,7 @@ img{display:block;max-width:100%}
           <div class="cp-avatar">🏟</div>
           <div class="cp-meta"><b>SanNicola1985</b><span>⚽ squadra · 1 h</span></div>
         </div>
-        <p>Con due rinforzi giusti questa rosa può cambiare parecchio. Ma il centrocampo deve trovare equilibrio. Voi chi prendereste? 🤔</p>
+        <p>Bianchi ha iniziato nel modo migliore e Della Morte ha inciso subito con l'assist. Ora il centrocampo deve trovare equilibrio: quale reparto vi convince di più? 🤔</p>
         <div class="cp-actions"><button onclick="communityLike(this)">❤️ 19</button><button>💬 17</button><button onclick="shareSite()">↗</button></div>
       </article>
     </div>
@@ -1872,7 +1928,7 @@ img{display:block;max-width:100%}
   <button class="nav-item" data-view="matches" onclick="switchView('matches')"><span class="ico">📅</span>Partite</button>
   <button class="nav-item" data-view="standings" onclick="switchView('standings')"><span class="ico">🏆</span>Classifica</button>
   <button class="nav-item" data-view="squad" onclick="switchView('squad')"><span class="ico">👕</span>Squadra</button>
-  <button class="nav-item" data-view="community" onclick="switchView('community')"><span class="ico">👥</span>Community</button>
+  <button class="nav-item" data-view="community" onclick="switchView('community')"><span class="ico">👥</span>Community <span class="nav-account-dot" id="navAccountDot" aria-label="stato account"></span></button>
 </nav>
 
 <div class="cookie" id="cookieBox">
@@ -1976,8 +2032,9 @@ function openLegal(type){
   <p>Questa beta non copia articoli integrali: mostra titoli/sintesi editoriali e collega alla fonte originale. Le indiscrezioni vengono etichettate come tali.</p>
   <h3>📰 Fonti dati/notizie usate nello snapshot</h3>
   <ul><li>SSC Bari — sito ufficiale</li><li>TuttoBari</li><li>La Bari Calcio</li><li>Sky Sport — calendario Serie C</li><li>Virgilio Sport — classifica</li></ul>
-  <h3>📸 Immagini</h3>
+  <h3>📸 Immagini e illustrazioni</h3>
   <ul>
+  <li>Le copertine principali sono illustrazioni editoriali originali TB, generate come scene simboliche e sempre indicate come tali: non rappresentano fotografie dell'evento né volti reali.</li>
   <li>Stadio San Nicola — Francesco Gernone, CC BY 2.0, Wikimedia Commons.</li>
   <li>Curva Nord Bari — Mr.Truman, CC BY-SA 4.0, Wikimedia Commons.</li>
   <li>SSC Bari-Potenza 2019 — Fidia 82, CC BY-SA 4.0, Wikimedia Commons.</li>
@@ -2000,30 +2057,71 @@ function joinCommunity(){
   const profile={
     nick,
     city:document.getElementById('joinCity').value.trim(),
-    years:document.getElementById('joinYears').value
+    years:document.getElementById('joinYears').value,
+    createdAt:new Date().toISOString(),
+    fanId:'TB-'+String(Math.abs([...nick].reduce((a,c)=>((a<<5)-a)+c.charCodeAt(0),5381))%10000).padStart(4,'0')
   };
   localStorage.setItem('tb-community-profile',JSON.stringify(profile));
   renderCommunityProfile();
+}
+function profileSlug(nick){
+  return (nick||'tifosotb').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,18)||'tifosotb';
 }
 function renderCommunityProfile(){
   const raw=localStorage.getItem('tb-community-profile');
   const join=document.getElementById('joinCard');
   const card=document.getElementById('profileCard');
   if(!join||!card)return;
-  if(!raw){join.style.display='block';card.classList.remove('show');return;}
-  const p=JSON.parse(raw);
+  const dot=document.getElementById('accountDot'),navDot=document.getElementById('navAccountDot');
+  const title=document.getElementById('accountStatusTitle'),status=document.getElementById('accountStatusText'),mode=document.getElementById('accountMode');
+  if(!raw){
+    join.style.display='block';card.classList.remove('show');
+    dot?.classList.remove('on');navDot?.classList.remove('on');mode?.classList.remove('on');
+    if(title)title.textContent=`Non hai effettuato l'accesso`;
+    if(status)status.textContent='Crea un profilo TB su questo dispositivo';
+    if(mode)mode.textContent='OFFLINE';
+    return;
+  }
+  let p={};
+  try{p=JSON.parse(raw)}catch(e){localStorage.removeItem('tb-community-profile');renderCommunityProfile();return}
+  if(!p.fanId)p.fanId='TB-'+String(Math.abs([...p.nick].reduce((a,c)=>((a<<5)-a)+c.charCodeAt(0),5381))%10000).padStart(4,'0');
   join.style.display='none';card.classList.add('show');
-  document.getElementById('profileNick').textContent='🐓 '+p.nick;
+  dot?.classList.add('on');navDot?.classList.add('on');mode?.classList.add('on');
+  if(title)title.textContent='Accesso locale attivo';
+  if(status)status.textContent='Profilo riconosciuto su questo dispositivo';
+  if(mode)mode.textContent='LOGGATO';
+  document.getElementById('profileNick').textContent=p.nick;
+  document.getElementById('profileHandle').textContent='@'+profileSlug(p.nick)+' · '+p.fanId;
+  document.getElementById('profileAvatar').textContent=(p.nick.trim()[0]||'🐓').toUpperCase();
   const bits=[];
   if(p.city)bits.push('📍 '+p.city);
   if(p.years)bits.push('❤️ '+p.years);
   document.getElementById('profileMeta').textContent=bits.join(' · ')||'Community biancorossa';
   document.getElementById('seniorityBadge').textContent=p.years?'⚽ '+p.years:'⚽ Nuovo membro';
+  const pct=60+(p.city?20:0)+(p.years?20:0);
+  document.getElementById('profileProgressText').textContent=pct+'% completo';
+  document.getElementById('profileProgressFill').style.width=pct+'%';
+  localStorage.setItem('tb-community-profile',JSON.stringify(p));
+}
+function editCommunityProfile(){
+  const p=JSON.parse(localStorage.getItem('tb-community-profile')||'{}');
+  document.getElementById('joinNick').value=p.nick||'';
+  document.getElementById('joinCity').value=p.city||'';
+  document.getElementById('joinYears').value=p.years||'';
+  document.getElementById('joinCard').style.display='block';
+  document.getElementById('profileCard').classList.remove('show');
+  document.getElementById('joinNick').focus();
+}
+function logoutCommunity(){
+  if(!confirm('Uscire dal profilo TB su questo dispositivo? I tuoi post locali resteranno salvati.'))return;
+  localStorage.removeItem('tb-community-profile');
+  renderCommunityProfile();
 }
 function toggleTopic(btn){
   btn.classList.toggle('active');
   const active=[...document.querySelectorAll('#topicChips .topic-chip.active')].map(x=>x.textContent);
   localStorage.setItem('tb-community-topics',JSON.stringify(active));
+  const stat=document.getElementById('statTopics');if(stat)stat.textContent=active.length;
 }
 function publishCommunityPost(){
   const composer=document.getElementById('communityComposer');
