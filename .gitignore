@@ -4,3 +4,5 @@ sito.html.gz
 index.verifica.html
 index.backup.html
 .vercel/
+.vercel
+.env*
