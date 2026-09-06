@@ -10,6 +10,7 @@
   const localJoinCommunity = window.joinCommunity;
   const localLogoutCommunity = window.logoutCommunity;
   const localPublishCommunityPost = window.publishCommunityPost;
+  const CONSENT_VERSION = '1.0';
 
   function showMessage(text, kind) {
     let box = $('accountMessage');
@@ -112,12 +113,50 @@
     return { email, password };
   }
 
+  function requireConsent() {
+    if (!$('joinConsent')?.checked) {
+      throw new Error('Per creare o collegare l’account devi accettare Privacy e Regolamento Community.');
+    }
+  }
+
+  async function recordConsent(user) {
+    if (!db || !user) return;
+    const { error } = await db.from('consents').upsert({
+      user_id: user.id,
+      policy_version: CONSENT_VERSION,
+      privacy_accepted: true,
+      community_rules_accepted: true,
+      age_declaration: '14_or_parental_authorization',
+      accepted_at: new Date().toISOString(),
+      user_agent: navigator.userAgent.slice(0, 300)
+    }, { onConflict: 'user_id,policy_version' });
+    if (error) console.warn('Consenso non registrato:', error.message);
+    localStorage.removeItem('tb-pending-consent');
+  }
+
+  window.signInSocial = async function (provider) {
+    if (!db) return showMessage('Account social temporaneamente non disponibile.', 'error');
+    try {
+      requireConsent();
+      localStorage.setItem('tb-pending-consent', CONSENT_VERSION);
+      const { error } = await db.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo: location.origin + '/?tb_auth=complete' }
+      });
+      if (error) throw error;
+    } catch (error) {
+      showMessage(error.message || 'Accesso social non disponibile.', 'error');
+    }
+  };
+
   window.createOnlineAccount = async function () {
     if (!db) return localJoinCommunity();
     try {
+      requireConsent();
       const { email, password } = readCredentials();
       const nickname = ($('joinNick')?.value || '').trim();
       if (nickname.length < 2) throw new Error('Scegli un nickname di almeno 2 caratteri.');
+      localStorage.setItem('tb-pending-consent', CONSENT_VERSION);
       showMessage('Creazione dell’account in corso…');
       const { data, error } = await db.auth.signUp({
         email,
@@ -133,6 +172,7 @@
       });
       if (error) throw error;
       if (data.session && data.user) {
+        await recordConsent(data.user);
         const profile = await loadProfile(data.user);
         renderOnlineProfile(data.user, profile);
         await loadOnlinePosts();
@@ -148,10 +188,12 @@
   window.loginOnlineAccount = async function () {
     if (!db) return localJoinCommunity();
     try {
+      requireConsent();
       const { email, password } = readCredentials();
       showMessage('Accesso in corso…');
       const { data, error } = await db.auth.signInWithPassword({ email, password });
       if (error) throw error;
+      await recordConsent(data.user);
       const profile = await loadProfile(data.user);
       renderOnlineProfile(data.user, profile);
       await loadOnlinePosts();
@@ -254,6 +296,44 @@
     }
   };
 
+  window.submitPrivacyRequest = async function () {
+    const status = $('privacyRequestStatus');
+    if (!currentUser) return alert('Accedi al tuo account TB per inviare una richiesta privacy.');
+    const requestType = $('privacyRequestType')?.value || 'access';
+    const details = ($('privacyRequestText')?.value || '').trim();
+    if (details.length < 5) return alert('Descrivi brevemente la richiesta.');
+    const { error } = await db.from('privacy_requests').insert({
+      user_id: currentUser.id,
+      request_type: requestType,
+      details
+    });
+    if (status) {
+      status.style.display = 'block';
+      status.className = 'account-message ' + (error ? 'error' : 'ok');
+      status.textContent = error ? 'Richiesta non inviata: ' + error.message : 'Richiesta registrata. Puoi conservarne traccia nel tuo account.';
+    }
+    if (!error && $('privacyRequestText')) $('privacyRequestText').value = '';
+  };
+
+  window.deleteOnlineAccount = async function () {
+    if (!db || !currentUser) return alert('Non risulta alcun account online collegato.');
+    const confirmation = prompt('Operazione irreversibile. Scrivi CANCELLA per eliminare account, profilo e contenuti.');
+    if (confirmation !== 'CANCELLA') return;
+    const { data } = await db.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token) return alert('Sessione scaduta: accedi nuovamente.');
+    const response = await fetch('/api/delete-account', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ confirmation: 'CANCELLA' })
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) return alert(result.error || 'Cancellazione non riuscita.');
+    await db.auth.signOut();
+    localStorage.removeItem('tb-community-profile');
+    renderOnlineLoggedOut('Account e dati collegati sono stati cancellati.');
+  };
+
   async function init() {
     try {
       const response = await fetch('/api/supabase-config', { headers: { Accept: 'application/json' } });
@@ -265,6 +345,7 @@
       setConnectionState(true);
       const { data } = await db.auth.getSession();
       if (data.session?.user) {
+        if (localStorage.getItem('tb-pending-consent') === CONSENT_VERSION) await recordConsent(data.session.user);
         const profile = await loadProfile(data.session.user);
         renderOnlineProfile(data.session.user, profile);
       } else {
@@ -273,6 +354,7 @@
       await loadOnlinePosts();
       db.auth.onAuthStateChange(async (_event, session) => {
         if (session?.user) {
+          if (localStorage.getItem('tb-pending-consent') === CONSENT_VERSION) await recordConsent(session.user);
           const profile = await loadProfile(session.user);
           renderOnlineProfile(session.user, profile);
         } else {

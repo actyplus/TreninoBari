@@ -391,6 +391,20 @@ img{display:block;max-width:100%}
 .account-secondary{border:1px solid #e1b8ba;background:#fff;color:var(--red);border-radius:13px;padding:11px;font-size:12px;font-weight:900;cursor:pointer}
 .account-message{margin-top:8px;padding:9px 10px;border-radius:12px;background:#f3f4f6;font-size:10px;line-height:1.4}
 .account-message.ok{background:#effaf3;color:#176d3e}.account-message.error{background:#fff1f1;color:#971018}
+.social-login{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:9px 0}
+.social-login button{min-height:43px;border-radius:13px;border:1px solid #ddd;background:#fff;font-size:12px;font-weight:900;cursor:pointer}
+.social-login .google{color:#303134}.social-login .facebook{color:#1769cf}
+.auth-divider{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:9px;margin:8px 0}
+.auth-divider:before,.auth-divider:after{content:"";height:1px;background:#e4e4e6;flex:1}
+.consent-box{display:flex;align-items:flex-start;gap:8px;padding:9px;border-radius:12px;background:#fafafa;border:1px solid #e7e7e9;font-size:10px;line-height:1.35}
+.consent-box input{width:17px;height:17px;flex:0 0 17px;margin:0;accent-color:var(--red)}
+.consent-box button{border:0;background:none;color:var(--red);font:inherit;font-weight:850;padding:0;text-decoration:underline;cursor:pointer}
+.privacy-center{background:#fff;border:1px solid var(--line);border-radius:19px;padding:12px}
+.privacy-center select,.privacy-center textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff;font:inherit;font-size:12px}
+.privacy-center textarea{min-height:76px;resize:vertical;margin-top:7px}
+.privacy-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.privacy-actions button{border:1px solid #e2e2e4;border-radius:11px;background:#fff;padding:8px 9px;font-size:10px;font-weight:850;cursor:pointer}
+.privacy-actions .danger{color:#9d1017;border-color:#efc3c6;background:#fff5f5}
 
 
 /* SEASON CALENDAR */
@@ -1192,6 +1206,7 @@ img{display:block;max-width:100%}
     <div class="footer-links">
       <button onclick="openLegal('sources')">📚 Fonti e licenze</button>
       <button onclick="openLegal('privacy')">🔐 Privacy</button>
+      <button onclick="openLegal('terms')">📜 Regolamento</button>
       <button onclick="openLegal('cookie')">🍪 Cookie</button>
     </div>
     TB – Trenino Bari · Ultimo aggiornamento notizie: 6 settembre 2026 · 10:03. *Classifica provvisoria: 3ª giornata in corso.
@@ -1695,6 +1710,15 @@ img{display:block;max-width:100%}
           </select>
           <input id="joinEmail" class="full online-account-field" type="email" maxlength="120" placeholder="✉️ La tua email" autocomplete="email">
           <input id="joinPassword" class="full online-account-field" type="password" minlength="8" maxlength="72" placeholder="🔑 Password (almeno 8 caratteri)" autocomplete="current-password">
+          <div class="full online-account-field social-login">
+            <button class="google" onclick="signInSocial('google')">G&nbsp; Continua con Google</button>
+            <button class="facebook" onclick="signInSocial('facebook')">f&nbsp; Continua con Meta</button>
+          </div>
+          <div class="full online-account-field auth-divider">oppure usa email e password</div>
+          <label class="full online-account-field consent-box">
+            <input id="joinConsent" type="checkbox">
+            <span>Dichiaro di avere almeno 14 anni oppure l'autorizzazione di chi esercita la responsabilità genitoriale e accetto <button type="button" onclick="openLegal('privacy')">Privacy</button> e <button type="button" onclick="openLegal('terms')">Regolamento Community</button> · versione 1.0.</span>
+          </label>
           <button class="primary full online-account-field" onclick="createOnlineAccount()">Crea il mio account TB</button>
           <button class="full account-secondary online-account-field" onclick="loginOnlineAccount()">Ho già un account · Accedi</button>
           <button class="primary full local-account-field" onclick="joinCommunity()">Crea anteprima locale</button>
@@ -1857,6 +1881,28 @@ img{display:block;max-width:100%}
   <div class="section">
     <div class="community-rules">
       🛡 <b>Regole TB:</b> confronto acceso sì, insulti e discriminazioni no. Le opinioni dei tifosi non devono essere presentate come notizie. Nella versione pubblica saranno disponibili segnalazione, blocco, moderazione, gestione account e cancellazione dei propri contenuti.
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h2>🛡 Privacy e account</h2><small>controlli dell'utente</small></div>
+    <div class="privacy-center">
+      <p style="font-size:11px;line-height:1.45;margin:0">Puoi chiedere accesso, rettifica, esportazione o cancellazione dei dati direttamente dal tuo account. La richiesta è privata e visibile solo a te e ai moderatori autorizzati.</p>
+      <select id="privacyRequestType" aria-label="Tipo di richiesta privacy">
+        <option value="access">Accesso ai miei dati</option>
+        <option value="rectification">Rettifica dei dati</option>
+        <option value="export">Esportazione dei dati</option>
+        <option value="restriction">Limitazione del trattamento</option>
+        <option value="deletion">Cancellazione dei contenuti</option>
+      </select>
+      <textarea id="privacyRequestText" maxlength="500" placeholder="Descrivi brevemente la richiesta"></textarea>
+      <div class="privacy-actions">
+        <button onclick="submitPrivacyRequest()">📨 Invia richiesta riservata</button>
+        <button onclick="openLegal('privacy')">🔐 Privacy</button>
+        <button onclick="openLegal('terms')">📜 Regolamento</button>
+        <button class="danger" onclick="deleteOnlineAccount()">🗑 Cancella account e dati</button>
+      </div>
+      <div id="privacyRequestStatus" class="account-message" style="display:none" aria-live="polite"></div>
     </div>
   </div>
 
@@ -2050,13 +2096,26 @@ function openLegal(type){
   <li>SSC Bari-Potenza 2019 — Fidia 82, CC BY-SA 4.0, Wikimedia Commons.</li>
   </ul>
   <p>In produzione le immagini saranno preferibilmente ospitate localmente, conservando attribuzione e licenza. Non useremo una foto editoriale solo perché è visibile online: servirà una licenza o autorizzazione compatibile.</p>`;
-  const privacy=`<h2>🔐 Privacy — bozza beta</h2>
-  <p>Questa versione non invia commenti o profili a un database: profilo community, preferenze, voto e contenuti di prova restano nel localStorage del dispositivo.</p>
-  <p>Prima della pubblicazione reale saranno definiti titolare del trattamento, finalità, basi giuridiche, conservazione, fornitori, eventuali trasferimenti, diritti GDPR, gestione account, moderazione e contatti privacy.</p>`;
-  const cookie=`<h2>🍪 Cookie — bozza beta</h2>
-  <p>La beta usa memoria locale essenziale per consenso, dimensione caratteri, sondaggio e commenti di prova. Non è presente pubblicità comportamentale.</p>
-  <p>Se in produzione verranno aggiunti analytics, advertising o servizi terzi non essenziali, saranno classificati e gestiti secondo le regole applicabili, con possibilità di modificare/revocare le scelte.</p>`;
-  document.getElementById('legalContent').innerHTML=type==='sources'?sources:(type==='privacy'?privacy:cookie);
+  const privacy=`<h2>🔐 Informativa privacy TB · v1.0</h2>
+  <p><b>Gestore del servizio:</b> progetto editoriale TB – Trenino Bari. <b>Contatto:</b> modulo riservato “Privacy e account” disponibile nella Community. Questa informativa è una base operativa da riesaminare qualora il progetto assuma natura commerciale o cambi gestione.</p>
+  <h3>Dati e finalità</h3>
+  <p>Per l'account trattiamo email, identificativo tecnico, nickname, eventuale città e anzianità da tifoso; per la Community trattiamo post, commenti, reazioni, pronostici, segnalazioni e richieste privacy. Servono a creare e proteggere l'account, fornire le funzioni richieste, moderare abusi e garantire la sicurezza.</p>
+  <h3>Base giuridica e fornitori</h3>
+  <p>Il trattamento necessario al servizio si basa sull'esecuzione della richiesta dell'utente; sicurezza e moderazione sul legittimo interesse; eventuali funzioni facoltative sul consenso. Supabase gestisce autenticazione e database, Vercel ospita il sito; Google o Meta intervengono soltanto se scelti per l'accesso.</p>
+  <h3>Conservazione e visibilità</h3>
+  <p>L'email non viene mostrata pubblicamente. Nickname e contenuti pubblicati sono visibili nella Community. I dati restano finché l'account è attivo o per il tempo necessario a gestire richieste, sicurezza e obblighi applicabili; l'utente può chiedere o avviare la cancellazione.</p>
+  <h3>Diritti e minori</h3>
+  <p>Dal Centro privacy si possono esercitare accesso, rettifica, esportazione, limitazione e cancellazione. Il sito informativo è accessibile a tutti; per creare un account l'utente dichiara di avere almeno 14 anni oppure l'autorizzazione di chi esercita la responsabilità genitoriale.</p>
+  <p><b>Versione:</b> 1.0 · 6 settembre 2026. Modifiche sostanziali richiederanno una nuova accettazione.</p>`;
+  const terms=`<h2>📜 Regolamento Community TB · v1.0</h2>
+  <p>La Community è dedicata al confronto sul Bari. Sono vietati insulti, discriminazioni, minacce, molestie, impersonificazione, spam, diffusione di dati personali altrui, contenuti illeciti e materiale coperto da diritti pubblicato senza autorizzazione.</p>
+  <p>Notizie, indiscrezioni e opinioni devono restare distinguibili. Gli utenti rispondono dei propri contenuti e concedono a TB la sola autorizzazione tecnica necessaria a mostrarli nel servizio. TB può limitare o rimuovere contenuti e account per sicurezza, violazioni o obblighi applicabili.</p>
+  <p>È possibile segnalare contenuti e richiedere revisione tramite il Centro privacy. La cancellazione dell'account elimina l'accesso e i dati collegati secondo le procedure tecniche previste.</p>
+  <p><b>Versione:</b> 1.0 · 6 settembre 2026.</p>`;
+  const cookie=`<h2>🍪 Cookie e memoria locale · v1.0</h2>
+  <p>TB utilizza memoria locale e token tecnici necessari per sessione, sicurezza, preferenze, consenso, dimensione caratteri e funzioni di gioco. Questi elementi sono indispensabili al servizio richiesto.</p>
+  <p>Non sono attivi pubblicità comportamentale o profilazione commerciale. L'accesso con Google o Meta comporta il passaggio al fornitore scelto; i relativi cookie sono regolati anche dalle informative di quel fornitore. Eventuali analytics o servizi non essenziali saranno attivati solo dopo un consenso separato.</p>`;
+  document.getElementById('legalContent').innerHTML=type==='sources'?sources:(type==='privacy'?privacy:(type==='terms'?terms:cookie));
   document.getElementById('legalModal').classList.add('show');
 }
 function closeLegal(){document.getElementById('legalModal').classList.remove('show')}
