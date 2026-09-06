@@ -389,12 +389,29 @@
     renderOnlineLoggedOut('Account e dati collegati sono stati cancellati.');
   };
 
+  async function syncVisibleSession() {
+    if (!db) return;
+    const { data, error } = await db.auth.getSession();
+    if (error) return console.warn('Sincronizzazione sessione:', error.message);
+    if (data.session) await applySession(data.session);
+  }
+
   window.addEventListener('message', (event) => {
     if (event.origin !== location.origin || event.data?.type !== 'tb-auth-complete') return;
     openCommunityView();
-    db?.auth.getSession().then(({ data }) => {
-      if (data.session) applySession(data.session);
-    });
+    setTimeout(() => syncVisibleSession(), 150);
+  });
+
+  window.addEventListener('focus', () => {
+    setTimeout(() => syncVisibleSession(), 250);
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') setTimeout(() => syncVisibleSession(), 250);
+  });
+
+  window.addEventListener('storage', (event) => {
+    if (event.key && event.key.includes('auth-token')) setTimeout(() => syncVisibleSession(), 100);
   });
 
   async function init() {
