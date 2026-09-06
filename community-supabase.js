@@ -82,6 +82,10 @@
     await loadOnlinePosts();
     if (oauthReturnPending()) {
       history.replaceState({}, document.title, location.pathname + '#community');
+      if (window.opener && !window.opener.closed) {
+        window.opener.postMessage({ type: 'tb-auth-complete' }, location.origin);
+        setTimeout(() => window.close(), 350);
+      }
     }
   }
 
@@ -180,18 +184,24 @@
 
   window.signInSocial = async function (provider) {
     if (!db) return showMessage('Account social temporaneamente non disponibile.', 'error');
+    const authWindow = window.open('', 'tb-social-login');
     try {
       localStorage.setItem('tb-pending-consent', CONSENT_VERSION);
       localStorage.setItem('tb-pending-provider', provider);
-      showMessage('Ti stiamo collegando in modo sicuro…', 'ok');
-      const { error } = await db.auth.signInWithOAuth({
+      showMessage('Completa l’accesso nella scheda Google: tornerai qui automaticamente.', 'ok');
+      const { data, error } = await db.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: location.origin + location.pathname + '?tb_auth=complete&view=community'
+          redirectTo: location.origin + location.pathname + '?tb_auth=complete&view=community',
+          skipBrowserRedirect: true
         }
       });
       if (error) throw error;
+      if (!data?.url) throw new Error('Google non ha restituito il collegamento di accesso.');
+      if (authWindow) authWindow.location.replace(data.url);
+      else location.assign(data.url);
     } catch (error) {
+      if (authWindow) authWindow.close();
       localStorage.removeItem('tb-pending-consent');
       localStorage.removeItem('tb-pending-provider');
       showMessage(error.message || 'Accesso social non disponibile.', 'error');
@@ -378,6 +388,14 @@
     localStorage.removeItem('tb-community-profile');
     renderOnlineLoggedOut('Account e dati collegati sono stati cancellati.');
   };
+
+  window.addEventListener('message', (event) => {
+    if (event.origin !== location.origin || event.data?.type !== 'tb-auth-complete') return;
+    openCommunityView();
+    db?.auth.getSession().then(({ data }) => {
+      if (data.session) applySession(data.session);
+    });
+  });
 
   async function init() {
     const returning = oauthReturnPending();
