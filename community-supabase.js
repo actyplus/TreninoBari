@@ -45,10 +45,44 @@
     const meta = user?.user_metadata || {};
     return {
       id: user?.id,
-      nickname: meta.nickname || (user?.email ? user.email.split('@')[0] : 'Tifoso TB'),
+      nickname: meta.nickname || meta.full_name || meta.name || (user?.email ? user.email.split('@')[0] : 'Tifoso TB'),
       city: meta.city || '',
-      supporter_years: meta.supporter_years || ''
+      supporter_years: meta.supporter_years || '',
+      avatar_url: meta.avatar_url || meta.picture || ''
     };
+  }
+
+  function oauthReturnPending() {
+    return new URLSearchParams(location.search).get('tb_auth') === 'complete';
+  }
+
+  function openCommunityView() {
+    if (typeof window.switchView === 'function') window.switchView('community');
+  }
+
+  async function loadProfileSafely(user) {
+    try {
+      return await loadProfile(user);
+    } catch (error) {
+      console.warn('Profilo remoto non ancora disponibile:', error.message);
+      return profileFromMetadata(user);
+    }
+  }
+
+  async function applySession(session) {
+    if (!session?.user) return renderOnlineLoggedOut();
+    const fallback = profileFromMetadata(session.user);
+    renderOnlineProfile(session.user, fallback);
+    openCommunityView();
+    if (localStorage.getItem('tb-pending-consent') === CONSENT_VERSION) {
+      await recordConsent(session.user);
+    }
+    const profile = await loadProfileSafely(session.user);
+    renderOnlineProfile(session.user, profile);
+    await loadOnlinePosts();
+    if (oauthReturnPending()) {
+      history.replaceState({}, document.title, location.pathname + '#community');
+    }
   }
 
   async function loadProfile(user) {
@@ -78,10 +112,20 @@
     if ($('accountStatusText')) $('accountStatusText').textContent = user.email || 'Sessione verificata';
 
     const nick = profile.nickname || 'Tifoso TB';
+    const provider = user.app_metadata?.provider || 'email';
+    const providerLabel = provider === 'google' ? 'Google' : provider === 'facebook' ? 'Meta' : 'Email';
+    if ($('accountMode')) $('accountMode').textContent = 'ONLINE · ' + providerLabel.toUpperCase();
+    if ($('accountStatusTitle')) $('accountStatusTitle').textContent = 'Accesso effettuato';
+    if ($('accountStatusText')) $('accountStatusText').textContent = (user.email || nick) + ' · sessione protetta';
     if ($('profileNick')) $('profileNick').textContent = nick;
-    if ($('profileAvatar')) $('profileAvatar').textContent = (nick[0] || 'T').toUpperCase();
-    if ($('profileHandle')) $('profileHandle').textContent = '@' + window.profileSlug(nick) + ' · account sincronizzato';
-    const meta = [];
+    if ($('profileAvatar')) {
+      const avatarUrl = profile.avatar_url || user.user_metadata?.avatar_url || user.user_metadata?.picture;
+      $('profileAvatar').innerHTML = avatarUrl
+        ? '<img src="' + window.esc(avatarUrl) + '" alt="" referrerpolicy="no-referrer">'
+        : window.esc((nick[0] || 'T').toUpperCase());
+    }
+    if ($('profileHandle')) $('profileHandle').textContent = '@' + window.profileSlug(nick) + ' · verificato con ' + providerLabel;
+    const meta = ['✅ Account collegato'];
     if (profile.city) meta.push('📍 ' + profile.city);
     if (profile.supporter_years) meta.push('❤️ ' + profile.supporter_years);
     if ($('profileMeta')) $('profileMeta').textContent = meta.join(' · ') || 'Community biancorossa';
@@ -137,14 +181,19 @@
   window.signInSocial = async function (provider) {
     if (!db) return showMessage('Account social temporaneamente non disponibile.', 'error');
     try {
-      requireConsent();
       localStorage.setItem('tb-pending-consent', CONSENT_VERSION);
+      localStorage.setItem('tb-pending-provider', provider);
+      showMessage('Ti stiamo collegando in modo sicuro…', 'ok');
       const { error } = await db.auth.signInWithOAuth({
         provider,
-        options: { redirectTo: location.origin + '/?tb_auth=complete' }
+        options: {
+          redirectTo: location.origin + location.pathname + '?tb_auth=complete&view=community'
+        }
       });
       if (error) throw error;
     } catch (error) {
+      localStorage.removeItem('tb-pending-consent');
+      localStorage.removeItem('tb-pending-provider');
       showMessage(error.message || 'Accesso social non disponibile.', 'error');
     }
   };
@@ -188,15 +237,11 @@
   window.loginOnlineAccount = async function () {
     if (!db) return localJoinCommunity();
     try {
-      requireConsent();
       const { email, password } = readCredentials();
       showMessage('Accesso in corso…');
       const { data, error } = await db.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      await recordConsent(data.user);
-      const profile = await loadProfile(data.user);
-      renderOnlineProfile(data.user, profile);
-      await loadOnlinePosts();
+      await applySession(data.session);
     } catch (error) {
       showMessage(error.message || 'Accesso non riuscito.', 'error');
     }
@@ -335,6 +380,14 @@
   };
 
   async function init() {
+    const returning = oauthReturnPending();
+    if (returning) {
+      openCommunityView();
+      if ($('joinCard')) $('joinCard').style.display = 'none';
+      if ($('accountStatusTitle')) $('accountStatusTitle').textContent = 'Accesso in corso…';
+      if ($('accountStatusText')) $('accountStatusText').textContent = 'Stiamo ripristinando la tua sessione TB';
+      if ($('accountMode')) $('accountMode').textContent = 'CONNESSIONE';
+    }
     try {
       const response = await fetch('/api/supabase-config', { headers: { Accept: 'application/json' } });
       const config = await response.json();
@@ -343,31 +396,30 @@
         auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
       });
       setConnectionState(true);
-      const { data } = await db.auth.getSession();
-      if (data.session?.user) {
-        if (localStorage.getItem('tb-pending-consent') === CONSENT_VERSION) await recordConsent(data.session.user);
-        const profile = await loadProfile(data.session.user);
-        renderOnlineProfile(data.session.user, profile);
-      } else {
-        renderOnlineLoggedOut();
-      }
-      await loadOnlinePosts();
-      db.auth.onAuthStateChange(async (_event, session) => {
-        if (session?.user) {
-          if (localStorage.getItem('tb-pending-consent') === CONSENT_VERSION) await recordConsent(session.user);
-          const profile = await loadProfile(session.user);
-          renderOnlineProfile(session.user, profile);
-        } else {
-          renderOnlineLoggedOut();
+
+      let { data } = await db.auth.getSession();
+      if (!data.session && returning) {
+        for (let attempt = 0; attempt < 5 && !data.session; attempt += 1) {
+          await new Promise((resolve) => setTimeout(resolve, 350));
+          ({ data } = await db.auth.getSession());
         }
+      }
+      if (data.session) await applySession(data.session);
+      else renderOnlineLoggedOut(returning ? 'Accesso Google non completato. Riprova dal pulsante dedicato.' : '');
+
+      await loadOnlinePosts();
+      db.auth.onAuthStateChange((_event, session) => {
+        setTimeout(() => applySession(session).catch((error) => {
+          console.warn('Aggiornamento sessione non riuscito:', error.message);
+        }), 0);
       });
       realtimeChannel = db.channel('tb-community-posts')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadOnlinePosts)
         .subscribe();
     } catch (error) {
-      setConnectionState(false, 'Account online temporaneamente non disponibile. Puoi usare l’anteprima locale.');
+      if (returning) openCommunityView();
+      setConnectionState(false, 'Account online temporaneamente non disponibile. Riprova tra poco.');
     }
   }
-
   document.addEventListener('DOMContentLoaded', init);
 })();
