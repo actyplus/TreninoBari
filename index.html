@@ -1731,7 +1731,7 @@ img{display:block;max-width:100%}
           <input id="joinEmail" class="full online-account-field" type="email" maxlength="120" placeholder="✉️ La tua email" autocomplete="email">
           <input id="joinPassword" class="full online-account-field" type="password" minlength="8" maxlength="72" placeholder="🔑 Password (almeno 8 caratteri)" autocomplete="current-password">
           <div class="full online-account-field social-login">
-            <button class="google" onclick="signInSocial('google')" aria-label="Registrati o accedi con Google">
+            <button class="google" type="button" onclick="event.preventDefault();signInSocial('google')" aria-label="Registrati o accedi con Google">
               <span class="provider-icon google-icon" aria-hidden="true">G</span>
               <span>Registrati o accedi con Google</span>
             </button>
@@ -2877,6 +2877,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js" defer></script>
-<script src="/community-supabase.js" defer></script>
+<script src="/community-supabase.js?v=20260906-3" defer></script>
 </body>
 </html>
