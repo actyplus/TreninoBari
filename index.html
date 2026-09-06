@@ -286,6 +286,16 @@ img{display:block;max-width:100%}
   .snapshot{grid-template-columns:repeat(3,1fr)}
   .post h3{font-size:27px}
 }
+@media(max-width:600px), (pointer:coarse) and (max-device-width:600px){
+  .join-grid{grid-template-columns:1fr}
+  .join-grid>*{grid-column:1/-1!important}
+  .social-login{grid-template-columns:1fr}
+  .social-login .google{min-height:54px;font-size:14px}
+  .account-status{align-items:flex-start}
+  .account-mode{margin-top:1px}
+  .profile-card.show{display:grid;grid-template-columns:auto 1fr}
+  .profile-card .profile-info{width:100%}
+}
 @media(max-width:390px){
   html,body{font-size:calc(16px * var(--font-scale))}
   .brand small{display:none}
@@ -391,9 +401,19 @@ img{display:block;max-width:100%}
 .account-secondary{border:1px solid #e1b8ba;background:#fff;color:var(--red);border-radius:13px;padding:11px;font-size:12px;font-weight:900;cursor:pointer}
 .account-message{margin-top:8px;padding:9px 10px;border-radius:12px;background:#f3f4f6;font-size:10px;line-height:1.4}
 .account-message.ok{background:#effaf3;color:#176d3e}.account-message.error{background:#fff1f1;color:#971018}
-.social-login{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:9px 0}
-.social-login button{min-height:43px;border-radius:13px;border:1px solid #ddd;background:#fff;font-size:12px;font-weight:900;cursor:pointer}
-.social-login .google{color:#303134}.social-login .facebook{color:#1769cf}
+.social-login{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 4px}
+.supabase-ready .social-login{display:grid!important}
+.social-login button{min-height:50px;border-radius:15px;border:1px solid #d9dce1;background:#fff;font-size:13px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px}
+.social-login .google{color:#202124;border-color:#c8ccd2;box-shadow:0 5px 16px rgba(60,64,67,.10)}
+.social-login .google:active{transform:scale(.985);background:#f8f9fa}
+.provider-icon{width:25px;height:25px;display:grid;place-items:center;border-radius:50%;font-size:15px;font-weight:950;background:#fff}
+.google-icon{color:#4285f4;border:1px solid #e1e4e8}
+.social-login .facebook{color:#1769cf}
+.social-login button:disabled{opacity:.52;cursor:not-allowed;background:#f5f5f6}
+.social-legal{color:#656970;font-size:9px;line-height:1.45;text-align:center;margin:4px 4px 10px}
+.social-legal button{border:0;background:none;padding:0;color:var(--red);font:inherit;font-weight:850;text-decoration:underline}
+.profile-card .avatar{overflow:hidden}
+.profile-card .avatar img{width:100%;height:100%;object-fit:cover}
 .auth-divider{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:9px;margin:8px 0}
 .auth-divider:before,.auth-divider:after{content:"";height:1px;background:#e4e4e6;flex:1}
 .consent-box{display:flex;align-items:flex-start;gap:8px;padding:9px;border-radius:12px;background:#fafafa;border:1px solid #e7e7e9;font-size:10px;line-height:1.35}
@@ -1711,13 +1731,25 @@ img{display:block;max-width:100%}
           <input id="joinEmail" class="full online-account-field" type="email" maxlength="120" placeholder="✉️ La tua email" autocomplete="email">
           <input id="joinPassword" class="full online-account-field" type="password" minlength="8" maxlength="72" placeholder="🔑 Password (almeno 8 caratteri)" autocomplete="current-password">
           <div class="full online-account-field social-login">
-            <button class="google" onclick="signInSocial('google')">G&nbsp; Continua con Google</button>
-            <button class="facebook" onclick="signInSocial('facebook')">f&nbsp; Continua con Meta</button>
+            <button class="google" onclick="signInSocial('google')" aria-label="Registrati o accedi con Google">
+              <span class="provider-icon google-icon" aria-hidden="true">G</span>
+              <span>Registrati o accedi con Google</span>
+            </button>
+            <button class="facebook" type="button" disabled title="Disponibile prossimamente">
+              <span class="provider-icon" aria-hidden="true">f</span>
+              <span>Meta · prossimamente</span>
+            </button>
           </div>
+          <p class="full online-account-field social-legal">
+            Continuando con Google accetti il
+            <button type="button" onclick="openLegal('terms')">Regolamento Community</button>
+            e confermi di aver letto la
+            <button type="button" onclick="openLegal('privacy')">Privacy</button>.
+          </p>
           <div class="full online-account-field auth-divider">oppure usa email e password</div>
           <label class="full online-account-field consent-box">
             <input id="joinConsent" type="checkbox">
-            <span>Dichiaro di avere almeno 14 anni oppure l'autorizzazione di chi esercita la responsabilità genitoriale e accetto <button type="button" onclick="openLegal('privacy')">Privacy</button> e <button type="button" onclick="openLegal('terms')">Regolamento Community</button> · versione 1.0.</span>
+            <span>Per creare un account con email confermo i requisiti indicati e accetto <button type="button" onclick="openLegal('privacy')">Privacy</button> e <button type="button" onclick="openLegal('terms')">Regolamento Community</button> · versione 1.0.</span>
           </label>
           <button class="primary full online-account-field" onclick="createOnlineAccount()">Crea il mio account TB</button>
           <button class="full account-secondary online-account-field" onclick="loginOnlineAccount()">Ho già un account · Accedi</button>
