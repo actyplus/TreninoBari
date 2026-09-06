@@ -385,6 +385,12 @@ img{display:block;max-width:100%}
 .account-roadmap b{color:#543b06}
 .nav-account-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#a7a9ae;vertical-align:middle;margin-left:3px}
 .nav-account-dot.on{background:#22a35a}
+.online-account-field{display:none!important}
+.supabase-ready .online-account-field{display:block!important}
+.supabase-ready .local-account-field{display:none!important}
+.account-secondary{border:1px solid #e1b8ba;background:#fff;color:var(--red);border-radius:13px;padding:11px;font-size:12px;font-weight:900;cursor:pointer}
+.account-message{margin-top:8px;padding:9px 10px;border-radius:12px;background:#f3f4f6;font-size:10px;line-height:1.4}
+.account-message.ok{background:#effaf3;color:#176d3e}.account-message.error{background:#fff1f1;color:#971018}
 
 
 /* SEASON CALENDAR */
@@ -1687,9 +1693,13 @@ img{display:block;max-width:100%}
             <option>Da oltre 20 anni</option>
             <option>Da sempre 😄</option>
           </select>
-          <button class="primary full" onclick="joinCommunity()">Crea il mio TB ID</button>
+          <input id="joinEmail" class="full online-account-field" type="email" maxlength="120" placeholder="✉️ La tua email" autocomplete="email">
+          <input id="joinPassword" class="full online-account-field" type="password" minlength="8" maxlength="72" placeholder="🔑 Password (almeno 8 caratteri)" autocomplete="current-password">
+          <button class="primary full online-account-field" onclick="createOnlineAccount()">Crea il mio account TB</button>
+          <button class="full account-secondary online-account-field" onclick="loginOnlineAccount()">Ho già un account · Accedi</button>
+          <button class="primary full local-account-field" onclick="joinCommunity()">Crea anteprima locale</button>
         </div>
-        <p style="font-size:10px;color:var(--muted);margin:8px 0 0">🔐 <b>Anteprima sicura:</b> niente email o password. Il profilo resta solo in questo browser e non è ancora sincronizzato tra dispositivi.</p>
+        <p id="accountHelp" style="font-size:10px;color:var(--muted);margin:8px 0 0">🔄 Connessione sicura al database TB in corso…</p>
       </div>
 
       <div class="profile-card" id="profileCard">
@@ -1720,7 +1730,7 @@ img{display:block;max-width:100%}
         <div class="cstat"><b id="statLikes">0</b><span>reazioni</span></div>
         <div class="cstat"><b id="statTopics">5</b><span>temi seguiti</span></div>
       </div>
-      <div class="account-roadmap"><b>🚧 Account online in preparazione.</b> Questa interfaccia mostra senza ambiguità quando sei loggato localmente. Il passo successivo è collegare autenticazione e database per usare lo stesso TB ID su telefono e PC.</div>
+      <div class="account-roadmap" id="accountRoadmap"><b>🔄 Connessione account.</b> TB sta verificando il collegamento sicuro con il database.</div>
     </div>
   </div>
 
@@ -1802,7 +1812,7 @@ img{display:block;max-width:100%}
   <div class="section">
     <div class="section-head"><h2>💬 Piazza TB</h2><small>feed community</small></div>
     <div class="community-feed" id="communityFeed">
-      <article class="community-post">
+      <article class="community-post demo-post">
         <div class="cp-head">
           <div class="cp-avatar">🐓</div>
           <div class="cp-meta"><b>TB Community</b><span>📌 post fissato · ora</span></div>
@@ -1811,7 +1821,7 @@ img{display:block;max-width:100%}
         <div class="cp-actions"><button onclick="communityLike(this)">❤️ 28</button><button>💬 6</button><button onclick="shareSite()">↗ Condividi</button></div>
       </article>
 
-      <article class="community-post">
+      <article class="community-post demo-post">
         <div class="cp-head">
           <div class="cp-avatar">⚽</div>
           <div class="cp-meta"><b>CurvaVirtuale</b><span>🗣 tifoseria · 32 min</span></div>
@@ -2775,5 +2785,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   penaltyResetRound();
 });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js" defer></script>
+<script src="/community-supabase.js" defer></script>
 </body>
 </html>
