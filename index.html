@@ -2549,6 +2549,7 @@ img{display:block;max-width:100%}
 let currentFilter='all';
 let liveMatchData=null;
 let showAllLiveEvents=false;
+let livePollTimer=null;
 
 function renderLiveMatch(){
   const section=document.getElementById('liveMatch');
@@ -2586,11 +2587,14 @@ async function loadLiveMatch(){
   }catch(_){
     const section=document.getElementById('liveMatch');
     if(section&&!liveMatchData?.live)section.hidden=true;
+  }finally{
+    clearTimeout(livePollTimer);
+    livePollTimer=setTimeout(loadLiveMatch,liveMatchData?.live?25000:180000);
   }
 }
 
 loadLiveMatch();
-setInterval(()=>{if(!document.hidden)loadLiveMatch()},25000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadLiveMatch()});
 
 function switchView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
