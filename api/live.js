@@ -40,6 +40,7 @@ function parseMatch(html, source) {
   const status = decodeHtml((html.match(/<p class="Match_status__[^"]*"[^>]*>([^<]+)<\/p>/) || [])[1]);
   const isOngoing = html.includes('--color-live-ongoing') ||
     /(?:\d+['’]|intervallo|1° tempo|2° tempo|tempi supplementari|rigori)/i.test(status);
+  const isFinished = /terminata|finale|fine partita/i.test(status);
 
   const events = [];
   const eventExpression = /<div class="Commentary_minute__[^"]*">([\s\S]*?)<\/div><div class="Commentary_commentText__[^"]*">([\s\S]*?)<\/div>/g;
@@ -55,6 +56,7 @@ function parseMatch(html, source) {
   if (teams.length !== 2 || !score || !status) return null;
   return {
     live: isOngoing,
+    finished: isFinished,
     competition: 'Serie C · Girone C',
     home: teams[0],
     away: teams[1],
@@ -102,16 +104,24 @@ function parseMatchData(payload, source) {
 
   return {
     live: livePeriods.has(info.Period),
+    finished: info.Period === 'FullTime',
     competition: fixture.cName || 'Serie C · Girone C',
     home: fixture.home_name || 'Casa',
     away: fixture.away_name || 'Bari',
     score: `${liveData.score_home ?? 0} - ${liveData.score_away ?? 0}`,
     status: periodLabel(info.Period, info.MatchTime),
+    matchDate: fixture?.date?.dateUTC || '',
     events,
     source,
     sourceName: 'Corriere dello Sport · dati Opta',
     updatedAt: payload.lastUpdate || new Date().toISOString()
   };
+}
+
+function isRecentFinal(match) {
+  if (!match?.finished) return false;
+  const timestamp = Date.parse(match.updatedAt || match.matchDate || '');
+  return Number.isFinite(timestamp) && Date.now() - timestamp < 18 * 60 * 60 * 1000;
 }
 
 async function fetchPage(url) {
@@ -152,7 +162,7 @@ module.exports = async function handler(req, res) {
     const currentId = matchIdFromPath(CURRENT_FALLBACK);
     if (currentId) {
       const current = await fetchMatchData(currentId, CURRENT_FALLBACK);
-      if (current?.live) return res.status(200).json(current);
+      if (current?.live || isRecentFinal(current)) return res.status(200).json(current);
     }
 
     const homepage = await fetchPage(SOURCE_ORIGIN);
@@ -162,7 +172,7 @@ module.exports = async function handler(req, res) {
       if (!matchId || matchId === currentId) continue;
       try {
         const data = await fetchMatchData(matchId, path);
-        if (data?.live) return res.status(200).json(data);
+        if (data?.live || isRecentFinal(data)) return res.status(200).json(data);
       } catch (_) {
         // Prova l'eventuale altra gara del Bari presente nella pagina live.
       }
@@ -182,3 +192,4 @@ module.exports = async function handler(req, res) {
 module.exports._parseMatch = parseMatch;
 module.exports._findMatchPaths = findMatchPaths;
 module.exports._parseMatchData = parseMatchData;
+module.exports._isRecentFinal = isRecentFinal;
