@@ -73,7 +73,6 @@
     if (!session?.user) return renderOnlineLoggedOut();
     const fallback = profileFromMetadata(session.user);
     renderOnlineProfile(session.user, fallback);
-    openCommunityView();
     if (localStorage.getItem('tb-pending-consent') === CONSENT_VERSION) {
       await recordConsent(session.user);
     }

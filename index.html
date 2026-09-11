@@ -1063,7 +1063,6 @@ img{display:block;max-width:100%}
         </div>
         <div class="live-events" id="liveEvents"></div>
         <div class="live-tools">
-          <button type="button" id="liveToggle" onclick="toggleLiveEvents()">Mostra tutte le azioni</button>
           <a id="liveSource" href="https://www.corrieredellosport.it/live" target="_blank" rel="noopener">Fonte live ↗</a>
         </div>
       </div>
@@ -2575,7 +2574,6 @@ img{display:block;max-width:100%}
 <script>
 let currentFilter='all';
 let liveMatchData=null;
-let showAllLiveEvents=false;
 let livePollTimer=null;
 const LIVE_RADIO_STREAM='https://ad1.xdevel.com/radionorbamusic';
 let liveRadioStarting=false;
@@ -2649,18 +2647,28 @@ function renderLiveMatch(){
   if(typeof liveMatchData.source==='string'&&liveMatchData.source.startsWith('https://www.corrieredellosport.it/'))source.href=liveMatchData.source;
   source.textContent=(liveMatchData.sourceName||'Fonte live')+' ↗';
   const all=Array.isArray(liveMatchData.events)?liveMatchData.events:[];
-  const salient=all.filter(event=>event.salient);
-  const visible=showAllLiveEvents?all:salient;
   const events=document.getElementById('liveEvents');
-  events.innerHTML=visible.length?visible.map(event=>`<div class="live-event ${/gol!/i.test(event.text)?'goal':''}"><span class="live-minute">${esc(event.minute)}</span><span class="live-description">${esc(event.text)}</span></div>`).join(''):'<div class="live-empty">La cronaca è iniziata: le azioni salienti compariranno qui automaticamente.</div>';
-  const toggle=document.getElementById('liveToggle');
-  toggle.hidden=all.length===salient.length;
-  toggle.textContent=showAllLiveEvents?'Mostra solo le azioni salienti':'Mostra tutte le azioni';
+  events.innerHTML=all.length?all.map(event=>`<div class="live-event ${/gol!/i.test(event.text)?'goal':''}"><span class="live-minute">${esc(event.minute)}</span><span class="live-description">${liveEventIcon(event.text)} ${esc(event.text)}</span></div>`).join(''):'<div class="live-empty">La cronaca è iniziata: tutte le azioni compariranno qui automaticamente.</div>';
   document.getElementById('snapshotMatchDate').textContent='🔴 LIVE '+(liveMatchData.status||'');
   document.getElementById('snapshotMatchLabel').textContent=`${liveMatchData.home} ${liveMatchData.score} ${liveMatchData.away}`;
 }
 
-function toggleLiveEvents(){showAllLiveEvents=!showAllLiveEvents;renderLiveMatch()}
+function liveEventIcon(text){
+  const action=String(text||'').toLowerCase();
+  if(/gol!|\bgol\b/.test(action))return '⚽';
+  if(/rigore/.test(action))return '🥅';
+  if(/parat|salvataggio/.test(action))return '🧤';
+  if(/espuls|cartellino rosso/.test(action))return '🟥';
+  if(/ammonit|cartellino giallo/.test(action))return '🟨';
+  if(/sostituz|entra al posto/.test(action))return '🔄';
+  if(/calcio d.angolo|corner/.test(action))return '🚩';
+  if(/tiro|conclusione|traversa|palo/.test(action))return '🎯';
+  if(/fuorigioco/.test(action))return '🚫';
+  if(/fallo|calcio di punizione/.test(action))return '🛑';
+  if(/riprende|inizia|calcio d.inizio/.test(action))return '▶️';
+  if(/sospes|intervallo|fine primo tempo/.test(action))return '⏸️';
+  return '📍';
+}
 
 async function loadLiveMatch(){
   try{
@@ -2702,6 +2710,8 @@ function switchView(name){
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
   window.scrollTo({top:0,behavior:'instant'});
 }
+
+switchView('home');
 
 
 function shareSite(){
