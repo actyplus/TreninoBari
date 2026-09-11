@@ -2712,8 +2712,6 @@ function switchView(name){
 }
 
 function openHomeOnEntry(){
-  const authReturn=new URLSearchParams(location.search).get('tb_auth')==='complete';
-  if(authReturn) return;
   switchView('home');
   if(location.hash==='#community'){
     history.replaceState({},document.title,location.pathname+location.search);
@@ -3554,6 +3552,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js" defer></script>
-<script src="/community-supabase.js?v=20260911-home" defer></script>
+<script src="/community-supabase.js?v=20260911-home2" defer></script>
 </body>
 </html>

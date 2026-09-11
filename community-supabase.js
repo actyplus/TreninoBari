@@ -56,6 +56,18 @@
     return new URLSearchParams(location.search).get('tb_auth') === 'complete';
   }
 
+  function oauthPopupIsOpen() {
+    return Boolean(window.opener && !window.opener.closed);
+  }
+
+  function clearOAuthMarkers() {
+    const url = new URL(location.href);
+    url.searchParams.delete('tb_auth');
+    url.searchParams.delete('view');
+    const query = url.searchParams.toString();
+    history.replaceState({}, document.title, url.pathname + (query ? '?' + query : '') + url.hash);
+  }
+
   function openCommunityView() {
     if (typeof window.switchView === 'function') window.switchView('community');
   }
@@ -80,8 +92,8 @@
     renderOnlineProfile(session.user, profile);
     await loadOnlinePosts();
     if (oauthReturnPending()) {
-      history.replaceState({}, document.title, location.pathname + '#community');
-      if (window.opener && !window.opener.closed) {
+      clearOAuthMarkers();
+      if (oauthPopupIsOpen()) {
         window.opener.postMessage({ type: 'tb-auth-complete' }, location.origin);
         setTimeout(() => window.close(), 350);
       }
@@ -415,8 +427,7 @@
 
   async function init() {
     const returning = oauthReturnPending();
-    if (returning) {
-      openCommunityView();
+    if (returning && oauthPopupIsOpen()) {
       if ($('joinCard')) $('joinCard').style.display = 'none';
       if ($('accountStatusTitle')) $('accountStatusTitle').textContent = 'Accesso in corso…';
       if ($('accountStatusText')) $('accountStatusText').textContent = 'Stiamo ripristinando la tua sessione TB';
@@ -439,7 +450,10 @@
         }
       }
       if (data.session) await applySession(data.session);
-      else renderOnlineLoggedOut(returning ? 'Accesso Google non completato. Riprova dal pulsante dedicato.' : '');
+      else {
+        if (returning) clearOAuthMarkers();
+        renderOnlineLoggedOut(returning ? 'Accesso Google non completato. Riprova dal pulsante dedicato.' : '');
+      }
 
       await loadOnlinePosts();
       db.auth.onAuthStateChange((_event, session) => {
@@ -451,7 +465,7 @@
         .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadOnlinePosts)
         .subscribe();
     } catch (error) {
-      if (returning) openCommunityView();
+      if (returning) clearOAuthMarkers();
       setConnectionState(false, 'Account online temporaneamente non disponibile. Riprova tra poco.');
     }
   }
