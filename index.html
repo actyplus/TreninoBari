@@ -2711,7 +2711,17 @@ function switchView(name){
   window.scrollTo({top:0,behavior:'instant'});
 }
 
-switchView('home');
+function openHomeOnEntry(){
+  const authReturn=new URLSearchParams(location.search).get('tb_auth')==='complete';
+  if(authReturn) return;
+  switchView('home');
+  if(location.hash==='#community'){
+    history.replaceState({},document.title,location.pathname+location.search);
+  }
+}
+
+openHomeOnEntry();
+window.addEventListener('pageshow',openHomeOnEntry);
 
 
 function shareSite(){
@@ -3544,6 +3554,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js" defer></script>
-<script src="/community-supabase.js?v=20260906-3" defer></script>
+<script src="/community-supabase.js?v=20260911-home" defer></script>
 </body>
 </html>
