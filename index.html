@@ -111,7 +111,7 @@ img{display:block;max-width:100%}
 .live-radio-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}
 .live-radio-title{font-size:14px;font-weight:950;color:#810b11;line-height:1.2}
 .live-radio-sub{font-size:10px;color:#6e5557;line-height:1.25;text-align:right}
-.live-radio audio{display:none}
+.live-radio-media{display:none}
 .live-radio-play{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:46px;padding:10px 14px;border:0;border-radius:999px;background:linear-gradient(135deg,#a9000b,#d51a25);color:#fff;font:inherit;font-size:14px;font-weight:950;box-shadow:0 8px 18px rgba(169,0,11,.2);cursor:pointer;touch-action:manipulation}
 .live-radio-play:active{transform:scale(.985)}
 .live-radio-play[aria-pressed="true"]{background:linear-gradient(135deg,#681016,#98000a)}
@@ -1051,14 +1051,14 @@ img{display:block;max-width:100%}
             <span class="live-radio-title">🎙️ Voce al Bari · Michele Salomone</span>
             <span class="live-radio-sub">Radio Norba Music<br>Avvia con un tocco</span>
           </div>
-          <audio id="liveRadio" preload="none" playsinline></audio>
+          <video class="live-radio-media" id="liveRadio" preload="none" playsinline></video>
           <button class="live-radio-play" id="liveRadioButton" type="button" aria-pressed="false" onclick="toggleLiveRadio()">
             <span class="live-radio-play-icon" id="liveRadioIcon" aria-hidden="true">▶</span>
             <span id="liveRadioLabel">Ascolta Salomone</span>
           </button>
           <div class="live-radio-links">
             <span id="liveRadioStatus" role="status">Tocca per avviare la radiocronaca</span>
-            <a href="https://play.radionorba.it/" target="_blank" rel="noopener">Lettore ufficiale ↗</a>
+            <a href="https://play.radionorba.it/#channel=radio-norba-music" target="_blank" rel="noopener">Lettore ufficiale ↗</a>
           </div>
         </div>
         <div class="live-events" id="liveEvents"></div>
@@ -2577,7 +2577,7 @@ let currentFilter='all';
 let liveMatchData=null;
 let showAllLiveEvents=false;
 let livePollTimer=null;
-const LIVE_RADIO_STREAM='https://stream7.xdevel.com/audio1s975885-1084/stream/icecast.audio';
+const LIVE_RADIO_STREAM='https://ad1.xdevel.com/radionorbamusic';
 let liveRadioStarting=false;
 let liveRadioTimeout=null;
 
@@ -2619,7 +2619,7 @@ async function toggleLiveRadio(){
   }catch(_){
     clearTimeout(liveRadioTimeout);
     liveRadioStarting=false;
-    setLiveRadioUi('error','Il browser ha bloccato lo stream: riprova o usa il lettore ufficiale');
+    setLiveRadioUi('error','Il flusso non è partito: riprova o usa il lettore ufficiale');
   }
 }
 
