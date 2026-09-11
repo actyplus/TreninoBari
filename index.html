@@ -107,6 +107,13 @@ img{display:block;max-width:100%}
 .live-feed{background:#fff;color:var(--ink);padding:12px 13px 13px}
 .live-feed-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
 .live-feed-head b{font-size:15px}.live-updated{font-size:9px;color:var(--muted)}
+.live-radio{margin:0 0 11px;padding:11px;background:#fff4f4;border:1px solid #f0c3c6;border-radius:15px}
+.live-radio-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}
+.live-radio-title{font-size:14px;font-weight:950;color:#810b11;line-height:1.2}
+.live-radio-sub{font-size:10px;color:#6e5557;line-height:1.25;text-align:right}
+.live-radio audio{display:block;width:100%;height:42px;accent-color:var(--red)}
+.live-radio-links{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:7px;font-size:10px;color:#785e60}
+.live-radio-links a{color:var(--red);font-weight:850;text-decoration:none}
 .live-events{display:grid;gap:7px;max-height:330px;overflow:auto;overscroll-behavior:contain}
 .live-event{display:grid;grid-template-columns:40px 1fr;gap:8px;align-items:start;padding:8px 9px;background:#f7f7f8;border:1px solid #ececef;border-radius:12px}
 .live-event.goal{background:#fff0f1;border-color:#efb5b8}
@@ -1009,7 +1016,7 @@ img{display:block;max-width:100%}
 <section class="view active" id="view-home">
   <div class="hero">
     <div class="hero-inner">
-      <span class="status-pill">🟢 DATI VERIFICATI · 11 SET 2026 · 21:35</span>
+      <span class="status-pill">🟢 DATI VERIFICATI · 11 SET 2026 · 21:58</span>
       <h1>Tutto il Bari.<br>Senza cercare altrove.</h1>
       <p>📰 Notizie · ⚽ partite · 🏆 classifica · 👕 squadra · 🗣 tifoseria</p>
     </div>
@@ -1034,6 +1041,20 @@ img{display:block;max-width:100%}
       </div>
       <div class="live-feed">
         <div class="live-feed-head"><b>Azioni salienti</b><span class="live-updated" id="liveUpdated">Aggiornamento automatico</span></div>
+        <div class="live-radio" aria-label="Radiocronaca del Bari su Radio Norba Music">
+          <div class="live-radio-head">
+            <span class="live-radio-title">🎙️ Voce al Bari · Michele Salomone</span>
+            <span class="live-radio-sub">Radio Norba Music<br>Avvia con un tocco</span>
+          </div>
+          <audio id="liveRadio" controls preload="none">
+            <source src="https://stream7.xdevel.com/audio1s975885-1084/stream/icecast.audio" type="audio/aac">
+            Il browser non supporta la riproduzione audio.
+          </audio>
+          <div class="live-radio-links">
+            <span id="liveRadioStatus">Radiocronaca ufficiale durante la partita</span>
+            <a href="https://play.radionorba.it/" target="_blank" rel="noopener">Lettore ufficiale ↗</a>
+          </div>
+        </div>
         <div class="live-events" id="liveEvents"></div>
         <div class="live-tools">
           <button type="button" id="liveToggle" onclick="toggleLiveEvents()">Mostra tutte le azioni</button>
@@ -2553,7 +2574,12 @@ let livePollTimer=null;
 
 function renderLiveMatch(){
   const section=document.getElementById('liveMatch');
-  if(!section||!liveMatchData?.live){if(section)section.hidden=true;return;}
+  if(!section||!liveMatchData?.live){
+    if(section)section.hidden=true;
+    const radio=document.getElementById('liveRadio');
+    if(radio&&!radio.paused)radio.pause();
+    return;
+  }
   section.hidden=false;
   document.getElementById('liveHome').textContent=liveMatchData.home||'—';
   document.getElementById('liveAway').textContent=liveMatchData.away||'Bari';
@@ -2595,6 +2621,10 @@ async function loadLiveMatch(){
 
 loadLiveMatch();
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadLiveMatch()});
+document.getElementById('liveRadio')?.addEventListener('error',()=>{
+  const status=document.getElementById('liveRadioStatus');
+  if(status)status.textContent='Audio non disponibile qui: usa il lettore ufficiale';
+});
 
 function switchView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
