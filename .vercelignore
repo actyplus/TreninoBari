@@ -1,0 +1,15 @@
+# Internal development material must not be served by the public static site.
+docs/
+supabase/
+tests/
+scripts/
+upload/
+editorial-run/
+security-work/
+*.py
+*.sql
+*.cjs
+*.map
+*.bak
+*.backup
+.env*
