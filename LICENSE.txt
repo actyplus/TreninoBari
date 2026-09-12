@@ -1,0 +1,22 @@
+TB - Trenino Bari
+Copyright (c) 2026 Attilio P. (actyplus).
+Tutti i diritti riservati, nei limiti dei diritti effettivamente detenuti.
+
+La consultazione del sito pubblico e l'utilizzo delle sue funzionalita sono
+consentiti. E consentita la condivisione dei collegamenti alle pagine pubbliche.
+Non viene concessa una licenza open source sul codice originale del progetto.
+Salvo autorizzazione scritta del titolare o quanto consentito dalla legge,
+non e autorizzata la riproduzione, redistribuzione o realizzazione di opere
+derivate delle componenti originali protette del progetto.
+
+Questa riserva non attribuisce un'esclusiva su idee, fatti, risultati sportivi
+o informazioni di pubblico dominio. Non limita le eccezioni previste dalla
+legge, i diritti gia validamente concessi o i diritti necessari all'utilizzo
+delle piattaforme di hosting e sviluppo autorizzate dal titolare.
+
+Software e altri materiali di terzi restano soggetti alle rispettive licenze.
+Fotografie, video incorporati, marchi e contenuti delle fonti citate appartengono
+ai rispettivi aventi diritto. I contenuti degli utenti rimangono dei loro autori.
+La presente riserva non rivendica la titolarita di tali materiali ne afferma
+un'affiliazione ufficiale con SSC Bari, Lega Pro, YouTube o le testate citate.
+
