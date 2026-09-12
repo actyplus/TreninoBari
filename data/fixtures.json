@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-09-12T07:00:00+02:00",
+  "verifiedAt": "2026-09-12T10:46:00+02:00",
   "fixtures": [
     {
       "id": "2026-09-15-bari-potenza",
@@ -7,6 +7,27 @@
       "away": "Potenza",
       "kickoff": "2026-09-15T21:00:00+02:00",
       "source": "https://www.sscalciobari.it/it/news/7356-allenamenti-domani-la-ripresa-dei-lavori/"
+    },
+    {
+      "id": "2026-09-19-sorrento-bari",
+      "home": "Sorrento",
+      "away": "Bari",
+      "kickoff": "2026-09-19T14:30:00+02:00",
+      "source": "https://www.sscalciobari.it/it/schedule/1/"
+    },
+    {
+      "id": "2026-09-26-bari-cosenza",
+      "home": "Bari",
+      "away": "Cosenza",
+      "kickoff": "2026-09-26T17:30:00+02:00",
+      "source": "https://www.sscalciobari.it/it/schedule/1/"
+    },
+    {
+      "id": "2026-10-04-salernitana-bari",
+      "home": "Salernitana",
+      "away": "Bari",
+      "kickoff": "2026-10-04T20:30:00+02:00",
+      "source": "https://www.sscalciobari.it/it/schedule/1/"
     }
   ]
 }
