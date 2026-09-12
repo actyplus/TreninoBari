@@ -1,4 +1,4 @@
-/* The verified Home archive is the single source for both surfaces. */
+/* The verified Home archive is the single source for Home, News and match details. */
 (() => {
   const news = document.getElementById('allNews');
   const originals = [...document.querySelectorAll('#bari-videos .tb-video-card')];
@@ -10,8 +10,7 @@
     copy.dataset.cat = 'video';
     news.prepend(copy);
   });
-  const cards = [...document.querySelectorAll('.tb-video-card')];
-  const placeholders = new Map(cards.map(card => [card, card.querySelector('.tb-video-screen').innerHTML]));
+  const placeholders = new WeakMap();
   let playing = null;
   function close() {
     if (!playing) return;
@@ -29,6 +28,7 @@
     const id = card.dataset.videoId;
     if (!/^[A-Za-z0-9_-]{11}$/.test(id)) return;
     close();
+    if (!placeholders.has(card)) placeholders.set(card, card.querySelector('.tb-video-screen').innerHTML);
     const frame = document.createElement('iframe');
     frame.title = card.querySelector('h3').textContent;
     frame.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&playsinline=1&rel=0';
@@ -41,7 +41,7 @@
     frame.focus();
   });
   new MutationObserver(() => {
-    if (playing && (!playing.closest('.view').classList.contains('active') || playing.style.display === 'none')) close();
-  }).observe(document.querySelector('main') || document.body, {subtree:true,attributes:true,attributeFilter:['class','style']});
+    if (playing && (!playing.isConnected || !playing.closest('.view')?.classList.contains('active') || playing.closest('[hidden]') || playing.style.display === 'none')) close();
+  }).observe(document.querySelector('main') || document.body, {subtree:true,childList:true,attributes:true,attributeFilter:['class','style']});
   window.addEventListener('pagehide', close);
 })();

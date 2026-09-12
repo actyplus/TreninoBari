@@ -21,6 +21,20 @@
     m.notes=row.querySelector('.match-main small')?.textContent.trim() || '';
     m.source=safeURL(row.dataset.source) || m.source;
   });
+  // Explicit match date avoids attaching a similarly titled video to the wrong game.
+  const videosByDate = new Map(), videoIDs = new Set();
+  document.querySelectorAll('#bari-videos .tb-video-card[data-match-date]').forEach(card => {
+    const date=card.dataset.matchDate, id=card.dataset.videoId;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !/^[A-Za-z0-9_-]{11}$/.test(id) || videoIDs.has(id)) return;
+    const template=card.cloneNode(true);
+    template.removeAttribute('id');
+    template.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+    videoIDs.add(id);
+    if(!videosByDate.has(date)) videosByDate.set(date,[]);
+    videosByDate.get(date).push(template);
+  });
+  const matchVideos=m=>m.result ? (videosByDate.get(m.date)||[]) : [];
+  const videoBadge=m=>matchVideos(m).length ? '<span class="tm-video-badge">🎬 Video</span>' : '';
   let today=dayKey(), month=today.slice(0,7), selected=today, mode='calendar', filter='all';
   const root=document.createElement('div'); root.id='tb-match-center';
   root.innerHTML=`<header class="tm-heading"><div><h2>⚽ Partite del Bari</h2><p id="tm-today-label"></p></div><span class="tm-season">Prima squadra · 2026/27</span></header>
@@ -29,7 +43,7 @@
       <div class="tm-toolbar"><div class="tm-month-nav"><button type="button" data-action="prev" aria-label="Mese precedente">‹</button><label class="tm-month-select"><span class="tm-sr">Scegli mese</span><select id="tm-month"></select></label><button type="button" data-action="next" aria-label="Mese successivo">›</button></div><button type="button" data-action="today">📍 Oggi</button></div>
       <div class="tm-options"><div class="tm-segments" aria-label="Vista partite"><button type="button" data-mode="calendar" aria-pressed="true">🗓 Calendario</button><button type="button" data-mode="list" aria-pressed="false">☷ Elenco</button></div><label>Mostra <select id="tm-filter"><option value="all">Tutte le gare</option><option value="home">🏠 In casa</option><option value="away">🚌 In trasferta</option><option value="league">Serie C</option><option value="cup">🏆 Coppa Italia</option></select></label></div>
       <p class="tm-month-info" id="tm-month-info" aria-live="polite"></p><div id="tm-calendar"></div><div id="tm-agenda" hidden></div>
-      <p class="tm-legend">🔴 Oggi <span>🏠 Casa</span><span>🚌 Trasferta</span><span>🏆 Coppa</span> · Tocca una gara per i dettagli</p>
+      <p class="tm-legend">🔴 Oggi <span>🏠 Casa</span><span>🚌 Trasferta</span><span>🏆 Coppa</span><span>🎬 Video disponibili</span> · Tocca una gara per i dettagli</p>
     </section><section id="tm-detail" class="tm-detail" aria-label="Dettaglio giorno" aria-live="polite"></section>
     <div id="tm-share-status" role="status"></div><p class="tm-footnote">Orari italiani. Le gare senza orario restano da confermare; il risultato compare solo dopo un aggiornamento verificato. Scorri a destra o sinistra sul calendario per cambiare mese.</p>`;
   view.prepend(root);
@@ -41,7 +55,7 @@
   const status=m=>m.result?'Finale':m.date<today?'Risultato da aggiornare':m.date===today?'In programma oggi':'In programma';
   const nextMatch=()=>matches.find(m=>!m.result && (m.date>today || m.date===today));
   const statusScore=m=>m.result || (m.time?'ore '+m.time:'Orario da confermare');
-  const shortCard=(m,label,featured=false)=>m?`<button type="button" class="tm-feature ${featured?'tm-feature-next':''}" data-select="${m.date}"><span class="tm-eyebrow">${esc(label)}</span><strong>${esc(m.home)} – ${esc(m.away)}</strong><span class="tm-score">${esc(statusScore(m))}</span><span>${esc(dateLabel(m.date,{weekday:'short'}))} · ${esc(meta(m))}</span><span class="tm-open">Apri dettagli ↗</span></button>`:'';
+  const shortCard=(m,label,featured=false)=>m?`<button type="button" class="tm-feature ${featured?'tm-feature-next':''}" data-select="${m.date}"><span class="tm-eyebrow">${esc(label)}</span><strong>${esc(m.home)} – ${esc(m.away)}</strong><span class="tm-score">${esc(statusScore(m))}</span><span>${esc(dateLabel(m.date,{weekday:'short'}))} · ${esc(meta(m))}</span><span class="tm-open">${matchVideos(m).length?'Guarda i video 🎬':'Apri dettagli ↗'}</span></button>`:'';
   function renderHighlights(){
     $('tm-today-label').textContent='Oggi è '+dateLabel(today,{weekday:'long',year:'numeric'});
     const next=nextMatch(), last=[...matches].reverse().find(m=>m.result && m.date<=today);
@@ -64,11 +78,11 @@
     let cells=['Lun','Mar','Mer','Gio','Ven','Sab','Dom'].map(d=>`<span class="tm-weekday">${d}</span>`).join('')+'<span aria-hidden="true"></span>'.repeat(offset);
     for(let n=1;n<=total;n++){
       const key=month+'-'+String(n).padStart(2,'0'),m=visible.find(m=>m.date===key),opponent=m?(isHome(m)?m.away:m.home):'';
-      const aria=dateLabel(key,{weekday:'long',year:'numeric'})+(key===today?', oggi':'')+(m?`, ${m.home} – ${m.away}, ${status(m)}, ${statusScore(m)}`:', nessuna gara con i filtri attivi');
-      cells+=`<button type="button" class="tm-day ${m?'tm-has-match':''} ${m&&isCup(m)?'tm-cup':''} ${key===today?'tm-today':''}" data-select="${key}" aria-label="${esc(aria)}" aria-pressed="${key===selected}"${key===today?' aria-current="date"':''}><b>${n}</b>${m?`<span class="tm-opponent">${isHome(m)?'🏠':'🚌'} ${esc(opponent)}</span><span class="tm-day-score">${esc(m.result||m.time||'Da definire')}</span>`:''}</button>`;
+      const aria=dateLabel(key,{weekday:'long',year:'numeric'})+(key===today?', oggi':'')+(m?`, ${m.home} – ${m.away}, ${status(m)}, ${statusScore(m)}${matchVideos(m).length?', video disponibili':''}`:', nessuna gara con i filtri attivi');
+      cells+=`<button type="button" class="tm-day ${m?'tm-has-match':''} ${m&&isCup(m)?'tm-cup':''} ${key===today?'tm-today':''}" data-select="${key}" aria-label="${esc(aria)}" aria-pressed="${key===selected}"${key===today?' aria-current="date"':''}><b>${n}</b>${m?`<span class="tm-opponent">${isHome(m)?'🏠':'🚌'} ${esc(opponent)}</span><span class="tm-day-score">${esc(m.result||m.time||'Da definire')}</span>${videoBadge(m)}`:''}</button>`;
     }
     $('tm-calendar').innerHTML='<div class="tm-grid">'+cells+'</div>';
-    $('tm-agenda').innerHTML=visible.length?visible.map(m=>`<button type="button" class="tm-agenda-row" data-select="${m.date}" aria-pressed="${m.date===selected}"><span class="tm-agenda-date">${esc(dateLabel(m.date,{month:'short'}))}</span><span><strong>${esc(m.home)} – ${esc(m.away)}</strong><small>${esc(meta(m))} · ${esc(status(m))}</small></span><b>${esc(statusScore(m))}</b></button>`).join(''):'<p class="tm-empty">Nessuna gara pubblicata per questo mese con i filtri scelti.</p>';
+    $('tm-agenda').innerHTML=visible.length?visible.map(m=>`<button type="button" class="tm-agenda-row" data-select="${m.date}" aria-pressed="${m.date===selected}"><span class="tm-agenda-date">${esc(dateLabel(m.date,{month:'short'}))}</span><span><strong>${esc(m.home)} – ${esc(m.away)}</strong><small>${esc(meta(m))} · ${esc(status(m))}</small>${videoBadge(m)}</span><b>${esc(statusScore(m))}</b></button>`).join(''):'<p class="tm-empty">Nessuna gara pubblicata per questo mese con i filtri scelti.</p>';
     renderDetail();
   }
   function renderDetail(){
@@ -79,6 +93,15 @@
     }
     const source=m.source?`<a href="${esc(m.source)}" target="_blank" rel="noopener">Fonte e aggiornamenti ↗</a>`:'';
     $('tm-detail').innerHTML=`<span class="tm-eyebrow">${esc(status(m))} · ${esc(dateLabel(m.date,{weekday:'long',year:'numeric'}))}</span><h3>${esc(m.home)} <span>${m.result?esc(m.result):'–'}</span> ${esc(m.away)}</h3><p>${esc(meta(m))}${m.time?' · ⏰ '+esc(m.time):!m.result?' · Orario da confermare':''}</p>${m.notes?`<p class="tm-notes">${esc(m.notes)}</p>`:''}<div class="tm-actions">${source}<button type="button" data-action="share">↗ Condividi partita</button>${!m.result&&m.time&&m.date>=today?'<button type="button" data-action="ics">📅 Salva nel calendario</button>':''}${m===nextMatch()?'<button type="button" data-action="prediction">🔮 Pronostica in Community</button>':''}</div>`;
+    const videos=matchVideos(m);
+    if(videos.length){
+      const section=document.createElement('section');
+      section.className='tm-match-videos';
+      section.setAttribute('aria-label','Video della partita');
+      section.innerHTML='<h4>🎬 Rivivi la partita</h4><p>Highlights e interviste: scegli un video e guardalo qui.</p><div class="tb-video-list"></div>';
+      videos.forEach(card=>section.querySelector('.tb-video-list').append(card.cloneNode(true)));
+      $('tm-detail').append(section);
+    }
   }
   function goToday(){today=dayKey();month=today.slice(0,7);selected=today;filter='all';$('tm-filter').value=filter;renderHighlights();render();}
   function select(key){selected=key;month=key.slice(0,7);render();}

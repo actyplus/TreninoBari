@@ -25,3 +25,7 @@ Confrontare Home, classifica, Marcatori Bari e Rosa: partite, punti e gol devono
 ## Vista Partite interattiva
 
 assets/matches.js costruisce la vista interattiva dai dati editoriali esistenti in index.html; nessun risultato viene dedotto dall'orario. Conservare le celle .mday.has-fixture con data-date ISO, title «Casa - Trasferta · Competizione · HH:MM / da definire», data-source HTTPS e data-round. Conservare le .match-row dei risultati con data-date, data-source, .match-main b e .result. Aggiornare questi elementi insieme dopo ogni finale o modifica del calendario; non modificare il DOM #tb-match-center generato. Le vecchie schede restano disponibili senza JavaScript. Mese e giorno correnti sono calcolati in Europe/Rome, anche fuori stagione.
+
+## Video nelle partite giocate
+
+Alle schede video canoniche in #bari-videos aggiungere data-match-date="YYYY-MM-DD" con la data verificata della partita raccontata (non la data di pubblicazione del video). Omettere l'attributo per video senza una partita precisa. assets/matches.js mostra automaticamente i video associati nei dettagli delle gare con risultato verificato, con indicatore 🎬 in calendario e in elenco. Non duplicare schede manualmente nel calendario o nelle News. Il player condiviso gestisce anche le schede generate e si chiude cambiando partita o sezione. Quando una scheda viene rimossa dall'archivio Home, non sarà più proposta neppure nei dettagli della partita.
