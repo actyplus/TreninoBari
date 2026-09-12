@@ -1,0 +1,32 @@
+[hidden]{display:none!important}
+.tb-auth-loading #joinCard{visibility:hidden}
+.tb-authenticated #joinCard{display:none!important}
+.local-account-field{display:none!important}
+.social-login .google{background:#fff;color:#1f1f1f;border:1px solid #747775;border-radius:28px;min-height:48px;font:600 15px Arial,sans-serif;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer}
+.social-login .google:hover{background:#f8faff;box-shadow:0 2px 8px #0002}
+.social-login .google:focus-visible{outline:3px solid #4285f4;outline-offset:3px}
+.social-login .google svg{width:20px;height:20px;flex-shrink:0}
+.tb-member-link{border:1px solid var(--line);border-radius:24px;padding:9px 13px;background:white;color:var(--red);font-weight:800;cursor:pointer}
+.tb-reactions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;border-top:1px solid var(--line);padding:10px 13px}
+.tb-reactions button{border:1px solid var(--line);border-radius:20px;background:white;min-height:36px;padding:6px 10px;cursor:pointer;font:inherit;font-size:12px}
+.tb-reactions button[aria-pressed=true]{background:var(--red-soft);border-color:var(--red);color:var(--red)}
+.tb-reactions small{color:var(--muted);font-size:11px;margin-left:auto}
+.tb-profile-form{display:grid;gap:16px;padding:20px}
+.tb-profile-form label{display:grid;gap:7px;font-size:14px;font-weight:700}
+.tb-profile-form input:not([type=checkbox]),.tb-profile-form select{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;font:inherit;background:white}
+.tb-profile-form .tb-check{display:flex;align-items:center;gap:9px}
+.tb-profile-form fieldset{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;gap:14px;flex-wrap:wrap}
+.tb-profile-form fieldset label{display:flex;align-items:center}
+.tb-xp-panel{padding:18px;background:linear-gradient(120deg,#a40012,#d51221);color:white;border-radius:18px;margin:12px 0}
+.tb-xp-panel strong{font-size:24px}
+.tb-xp-panel progress{width:100%;height:12px;accent-color:white;margin:12px 0}
+.tb-xp-panel p{font-size:13px;line-height:1.5}
+.tb-toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);max-width:92vw;background:#222;color:white;border-radius:14px;padding:13px 18px;z-index:9999;font-size:14px}
+.tb-video-card.news-item{grid-column:1/-1}
+.tb-leaderboard{padding:0;list-style:none}
+.tb-leaderboard li{display:flex;justify-content:space-between;gap:12px;padding:10px;border-bottom:1px solid var(--line)}
+#tbProfileMessage{font-size:14px;min-height:20px}
+.tb-news-empty{padding:20px;text-align:center;color:var(--muted)}
+@media(max-width:500px){.tb-reactions{gap:5px}.tb-reactions small{width:100%;margin:0}.tb-profile-form{padding:14px}}
+
+.social-login{grid-template-columns:1fr!important}

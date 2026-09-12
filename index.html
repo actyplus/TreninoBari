@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="it">
+<html lang="it" class="tb-auth-loading">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1020,6 +1020,7 @@ img{display:block;max-width:100%}
 .tb-video-close{border:1px solid var(--line);border-radius:10px;background:white;padding:8px 12px;cursor:pointer;font-size:14px}
 
 </style>
+<link rel="stylesheet" href="/member.css?v=20260912-members">
 </head>
 <body>
 <div class="app">
@@ -1690,6 +1691,7 @@ img{display:block;max-width:100%}
       <button class="filter" data-filter="mercato" onclick="setFilter(this)">💼 Mercato</button>
       <button class="filter" data-filter="squadra" onclick="setFilter(this)">⚽ Squadra</button>
       <button class="filter" data-filter="tifosi" onclick="setFilter(this)">🗣 Tifosi</button>
+      <button class="filter" data-filter="video" onclick="setFilter(this)">🎬 Video</button>
       <button class="filter" data-filter="societa" onclick="setFilter(this)">🏢 Società</button>
     </div>
     <div class="feed two-col" id="allNews">
@@ -2402,6 +2404,19 @@ img{display:block;max-width:100%}
 
       <div class="join-card" id="joinCard">
         <div class="join-grid">
+          <div class="full online-account-field social-login">
+            <button class="google" type="button" onclick="event.preventDefault();signInSocial('google')" aria-label="Continua con Google">
+              <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6C44.4 38.02 46.98 31.86 46.98 24.55z"/><path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.78-4.59l-7.98-6.19A23.88 23.88 0 0 0 0 24c0 3.87.93 7.52 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.15 1.45-4.92 2.3-8.18 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+              <span>Continua con Google</span>
+            </button>
+          </div>
+          <p class="full online-account-field social-legal">
+            Continuando con Google accetti il
+            <button type="button" onclick="openLegal('terms')">Regolamento Community</button>
+            e confermi di aver letto la
+            <button type="button" onclick="openLegal('privacy')">Privacy</button>.
+          </p>
+          <div class="full online-account-field auth-divider">oppure usa email e password</div>
           <input id="joinNick" class="full" maxlength="24" placeholder="🐓 Scegli il tuo nickname" autocomplete="nickname">
           <input id="joinCity" maxlength="30" placeholder="📍 Città (facoltativa)">
           <select id="joinYears">
@@ -2414,23 +2429,6 @@ img{display:block;max-width:100%}
           </select>
           <input id="joinEmail" class="full online-account-field" type="email" maxlength="120" placeholder="✉️ La tua email" autocomplete="email">
           <input id="joinPassword" class="full online-account-field" type="password" minlength="8" maxlength="72" placeholder="🔑 Password (almeno 8 caratteri)" autocomplete="current-password">
-          <div class="full online-account-field social-login">
-            <button class="google" type="button" onclick="event.preventDefault();signInSocial('google')" aria-label="Registrati o accedi con Google">
-              <span class="provider-icon google-icon" aria-hidden="true">G</span>
-              <span>Registrati o accedi con Google</span>
-            </button>
-            <button class="facebook" type="button" disabled title="Disponibile prossimamente">
-              <span class="provider-icon" aria-hidden="true">f</span>
-              <span>Meta · prossimamente</span>
-            </button>
-          </div>
-          <p class="full online-account-field social-legal">
-            Continuando con Google accetti il
-            <button type="button" onclick="openLegal('terms')">Regolamento Community</button>
-            e confermi di aver letto la
-            <button type="button" onclick="openLegal('privacy')">Privacy</button>.
-          </p>
-          <div class="full online-account-field auth-divider">oppure usa email e password</div>
           <label class="full online-account-field consent-box">
             <input id="joinConsent" type="checkbox">
             <span>Per creare un account con email confermo i requisiti indicati e accetto <button type="button" onclick="openLegal('privacy')">Privacy</button> e <button type="button" onclick="openLegal('terms')">Regolamento Community</button> · versione 1.0.</span>
@@ -2629,7 +2627,7 @@ img{display:block;max-width:100%}
       <div class="game-top">
         <div class="xp-box">
           <b id="tbGameXp">0 XP</b>
-          <span>Esperienza totale = gol segnati + rigori parati</span>
+          <span>XP personali · rigori e partecipazione</span>
         </div>
         <div class="game-stats">
           <div class="game-stat"><b id="tbGameGoals">0</b><span>gol fatti</span></div>
@@ -2677,12 +2675,12 @@ img{display:block;max-width:100%}
 
       <div class="game-mini-actions">
         <button onclick="penaltyResetRound()">🔄 Nuova azione</button>
-        <button onclick="resetPenaltyProgress()">🗑 Reset progressi</button>
+        <button onclick="editCommunityProfile()">👤 Il mio profilo</button>
         <button onclick="switchView('community');document.getElementById('tbPrediction')?.scrollIntoView({behavior:'smooth'})">🔮 Vai ai pronostici</button>
       </div>
 
       <div class="game-help">
-        🎯 <b>Come funziona:</b> ogni gol segnato vale <b>10 XP</b>, ogni rigore parato vale <b>12 XP</b>.
+        🎯 <b>Come funziona:</b> gol: fino a <b>10 XP</b>, parata: fino a <b>12 XP</b>, con un massimo complessivo di <b>60 XP al giorno</b>. Gli XP vengono confermati online.
         Il livello sale automaticamente in base all’esperienza totale e i progressi restano salvati sul dispositivo.
       </div>
     </div>
@@ -2704,7 +2702,7 @@ img{display:block;max-width:100%}
 </nav>
 
 <div class="cookie" id="cookieBox">
-  <p>🍪 <b>Cookie e privacy.</b> Questa beta usa solo memoria locale per preferenze, commenti e consenso. Le immagini provengono da Wikimedia Commons. In produzione, analytics o servizi non necessari saranno gestiti con consenso quando richiesto.</p>
+  <p>🍪 <b>Cookie e privacy.</b> La sessione e le preferenze tecniche restano sul dispositivo. Account e interazioni sono salvati online. I video YouTube si caricano quando premi Play.</p>
   <div class="cookie-actions">
     <button class="light" onclick="saveConsent('essential')">Solo necessari</button>
     <button class="light" onclick="saveConsent('all')">Accetta</button>
@@ -2910,7 +2908,7 @@ function filterNews(){
   document.querySelectorAll('.news-item').forEach(item=>{
     const cat=item.dataset.cat;
     const okCat=currentFilter==='all'||cat===currentFilter;
-    const okText=!q||item.innerText.toLowerCase().includes(q);
+    const okText=!q||item.textContent.toLowerCase().includes(q);
     item.style.display=(okCat&&okText)?'block':'none';
   });
 }
@@ -2985,7 +2983,7 @@ function openLegal(type){
   <p><b>Versione:</b> 1.0 · 6 settembre 2026.</p>`;
   const cookie=`<h2>🍪 Cookie e memoria locale · v1.0</h2>
   <p>TB utilizza memoria locale e token tecnici necessari per sessione, sicurezza, preferenze, consenso, dimensione caratteri e funzioni di gioco. Questi elementi sono indispensabili al servizio richiesto.</p>
-  <p>Non sono attivi pubblicità comportamentale o profilazione commerciale. L'accesso con Google o Meta comporta il passaggio al fornitore scelto; i relativi cookie sono regolati anche dalle informative di quel fornitore. Eventuali analytics o servizi non essenziali saranno attivati solo dopo un consenso separato.</p>`;
+  <p>Le reazioni sono associate all’account. Le letture sono deduplicate per giornata con identificativi pseudonimi. Gli XP registrano le azioni premiate; la classifica pubblica mostra nickname e punti solo se scelta dal profilo. Gli inviti collegano il codice condiviso alla nuova registrazione verificata.</p><p>Non sono attivi pubblicità comportamentale o profilazione commerciale. L'accesso con Google o Meta comporta il passaggio al fornitore scelto; i relativi cookie sono regolati anche dalle informative di quel fornitore. Eventuali analytics o servizi non essenziali saranno attivati solo dopo un consenso separato.</p>`;
   document.getElementById('legalContent').innerHTML=type==='sources'?sources:(type==='privacy'?privacy:(type==='terms'?terms:cookie));
   document.getElementById('legalModal').classList.add('show');
 }
@@ -3100,8 +3098,7 @@ function communityVote(btn){
   localStorage.setItem('tb-community-vote',btn.textContent);
 }
 document.addEventListener('DOMContentLoaded',()=>{
-  renderCommunityProfile();
-  renderCommunityPosts();
+  // Online identity and posts are restored by community-supabase.js.
   const vote=localStorage.getItem('tb-community-vote');
   if(vote)document.querySelectorAll('#communityPoll button').forEach(b=>{if(b.textContent===vote)b.classList.add('selected')});
 });
@@ -3238,8 +3235,7 @@ function renderPredictionComments(){
 }
 document.addEventListener('DOMContentLoaded',()=>{
   initSeasonCalendar();
-  renderPrediction();
-  renderPredictionComments();
+  // Account predictions are restored by member.js.
 });
 
 
@@ -3417,7 +3413,7 @@ function renderPenaltyHud(){
   if(saves)saves.textContent=penaltyGame.stats.saves;
   if(level)level.textContent=penaltyLevel();
   if(bar)bar.style.width=penaltyProgressPct().toFixed(1)+'%';
-  if(next)next.textContent=(60-(penaltyGame.stats.xp%60))+' XP al prossimo livello';
+  if(next)next.textContent=(100-(penaltyGame.stats.xp%100))+' XP al prossimo livello';
 }
 
 function setPenaltyMode(mode){
@@ -3710,57 +3706,15 @@ function resetPenaltyProgress(){
 tbAtlasImg.onload=()=>drawPenaltyScene();
 
 document.addEventListener('DOMContentLoaded',()=>{
-  loadPenaltyStats();
   renderPenaltyHud();
   penaltyResetRound();
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js" defer></script>
-<script src="/community-supabase.js?v=20260911-home2" defer></script>
+<script src="/community-supabase.js?v=20260912-members" defer></script>
 
-<script>
-/* TB video player: no downloads or rehosting; the source retains playback controls. */
-(()=>{
-  const root=document.getElementById('bari-videos');
-  if(!root)return;
-  const placeholders=new Map();
-  root.querySelectorAll('.tb-video-card').forEach(card=>{
-    placeholders.set(card,card.querySelector('.tb-video-screen').innerHTML);
-  });
-  function close(card){
-    card.querySelector('.tb-video-screen').innerHTML=placeholders.get(card);
-    card.querySelector('.tb-video-close').hidden=true;
-  }
-  function closeAll(){root.querySelectorAll('.tb-video-card').forEach(close);}
-  root.addEventListener('click',event=>{
-    const button=event.target.closest('button');
-    if(!button)return;
-    const card=button.closest('.tb-video-card');
-    if(!card)return;
-    if(button.classList.contains('tb-video-close')){
-      close(card);card.querySelector('.tb-video-play').focus();return;
-    }
-    if(!button.classList.contains('tb-video-play'))return;
-    const id=card.dataset.videoId;
-    if(!/^[A-Za-z0-9_-]{11}$/.test(id))return;
-    closeAll();
-    const frame=document.createElement('iframe');
-    frame.title=card.querySelector('h3').textContent;
-    frame.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&playsinline=1&rel=0';
-    frame.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';
-    frame.allowFullscreen=true;
-    frame.referrerPolicy='strict-origin-when-cross-origin';
-    card.querySelector('.tb-video-screen').replaceChildren(frame);
-    card.querySelector('.tb-video-close').hidden=false;
-    frame.focus();
-  });
-  const home=document.getElementById('view-home');
-  if(home)new MutationObserver(()=>{
-    if(!home.classList.contains('active'))closeAll();
-  }).observe(home,{attributes:true,attributeFilter:['class']});
-  window.addEventListener('pagehide',closeAll);
-})();
-</script>
+<script src="/video-news.js?v=20260912" defer></script>
+<script src="/member.js?v=20260912" defer></script>
 
 </body>
 </html>

@@ -5,6 +5,15 @@
   let currentUser = null;
   let currentProfile = null;
   let realtimeChannel = null;
+  let sessionRevision = 0;
+  window.TBAuth = { get user() { return currentUser; }, get profile() { return currentProfile; },
+    get client() { return db; }, refresh: () => syncVisibleSession(),
+    async token() { const { data, error } = await db.auth.getSession(); if (error) throw error; return data.session?.access_token; } };
+  function announceSession() {
+    document.documentElement.classList.remove('tb-auth-loading');
+    document.documentElement.classList.toggle('tb-authenticated', !!currentUser);
+    window.dispatchEvent(new CustomEvent('tb:auth', {detail:{user:currentUser,profile:currentProfile}}));
+  }
 
   const $ = (id) => document.getElementById(id);
   const localJoinCommunity = window.joinCommunity;
@@ -18,7 +27,7 @@
       box = document.createElement('div');
       box.id = 'accountMessage';
       box.className = 'account-message';
-      $('joinCard')?.appendChild(box);
+      $('accountRoadmap')?.before(box);
     }
     box.textContent = text;
     box.className = 'account-message ' + (kind || '');
@@ -31,12 +40,12 @@
     if (help) {
       help.innerHTML = online
         ? '🔐 Accesso protetto da Supabase. Email e password non vengono salvate nel codice del sito.'
-        : '📱 Modalità locale disponibile: il profilo resta soltanto su questo dispositivo.';
+        : 'Accesso temporaneamente non disponibile. Puoi continuare a navigare.';
     }
     if (road) {
       road.innerHTML = online
         ? '<b>✅ Database TB collegato.</b> Account, post e sessione possono essere sincronizzati fra telefono e PC.'
-        : '<b>⚠️ Database non raggiungibile.</b> TB continua a funzionare in modalità locale senza perdere la navigazione.';
+        : '<b>⚠️ Account non raggiungibile.</b> Notizie, video e navigazione restano disponibili.';
     }
     if (!online && text) showMessage(text, 'error');
   }
@@ -82,6 +91,7 @@
   }
 
   async function applySession(session) {
+    const revision = ++sessionRevision;
     if (!session?.user) return renderOnlineLoggedOut();
     const fallback = profileFromMetadata(session.user);
     renderOnlineProfile(session.user, fallback);
@@ -89,10 +99,12 @@
       await recordConsent(session.user);
     }
     const profile = await loadProfileSafely(session.user);
+    if (revision !== sessionRevision) return;
     renderOnlineProfile(session.user, profile);
     await loadOnlinePosts();
     if (oauthReturnPending()) {
       clearOAuthMarkers();
+      window.switchView('home');
       if (oauthPopupIsOpen()) {
         window.opener.postMessage({ type: 'tb-auth-complete' }, location.origin);
         setTimeout(() => window.close(), 350);
@@ -113,6 +125,7 @@
   function renderOnlineProfile(user, profile) {
     currentUser = user;
     currentProfile = profile;
+    announceSession();
     const join = $('joinCard');
     const card = $('profileCard');
     if (!join || !card) return;
@@ -153,6 +166,7 @@
   function renderOnlineLoggedOut(message) {
     currentUser = null;
     currentProfile = null;
+    announceSession();
     $('joinCard') && ($('joinCard').style.display = 'block');
     $('profileCard')?.classList.remove('show');
     $('accountDot')?.classList.remove('on');
@@ -194,33 +208,31 @@
   }
 
   window.signInSocial = async function (provider) {
-    if (!db) return showMessage('Account social temporaneamente non disponibile.', 'error');
-    const authWindow = window.open('', 'tb-social-login');
+    if (provider !== 'google') return;
+    if (!db) return showMessage('Connessione account in corso. Riprova fra poco.', 'error');
+    const button = document.querySelector('button.google');
+    button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
     try {
       localStorage.setItem('tb-pending-consent', CONSENT_VERSION);
-      localStorage.setItem('tb-pending-provider', provider);
-      showMessage('Completa l’accesso nella scheda Google: tornerai qui automaticamente.', 'ok');
-      const { data, error } = await db.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: location.origin + location.pathname + '?tb_auth=complete&view=community',
-          skipBrowserRedirect: true
-        }
-      });
+      // Same-tab OAuth works on mobile and does not depend on popup/opener policies.
+      const { data, error } = await db.auth.signInWithOAuth({provider:'google',options:{
+        redirectTo:location.origin + location.pathname,
+        skipBrowserRedirect:true
+      }});
       if (error) throw error;
-      if (!data?.url) throw new Error('Google non ha restituito il collegamento di accesso.');
-      if (authWindow) authWindow.location.replace(data.url);
-      else location.assign(data.url);
+      if (!data?.url) throw new Error('Accesso Google non disponibile.');
+      location.assign(data.url);
     } catch (error) {
-      if (authWindow) authWindow.close();
       localStorage.removeItem('tb-pending-consent');
-      localStorage.removeItem('tb-pending-provider');
-      showMessage(error.message || 'Accesso social non disponibile.', 'error');
+      showMessage(error.message, 'error');
+      button.disabled = false;
+      button.removeAttribute('aria-busy');
     }
   };
 
   window.createOnlineAccount = async function () {
-    if (!db) return localJoinCommunity();
+    if (!db) return showMessage('Connessione account in corso. Riprova fra poco.', 'error');
     try {
       requireConsent();
       const { email, password } = readCredentials();
@@ -256,7 +268,7 @@
   };
 
   window.loginOnlineAccount = async function () {
-    if (!db) return localJoinCommunity();
+    if (!db) return showMessage('Connessione account in corso. Riprova fra poco.', 'error');
     try {
       const { email, password } = readCredentials();
       showMessage('Accesso in corso…');
@@ -334,7 +346,7 @@
   }
 
   window.publishCommunityPost = async function () {
-    if (!db) return localPublishCommunityPost();
+    if (!db) return showMessage('Accedi al tuo account per pubblicare.', 'error');
     if (!currentUser || !currentProfile) return alert('Accedi prima al tuo account TB.');
     const composer = $('communityComposer');
     const body = (composer?.value || '').trim();
@@ -404,7 +416,7 @@
     if (!db) return;
     const { data, error } = await db.auth.getSession();
     if (error) return console.warn('Sincronizzazione sessione:', error.message);
-    if (data.session) await applySession(data.session);
+    await applySession(data.session);
   }
 
   window.addEventListener('message', (event) => {
@@ -466,6 +478,7 @@
         .subscribe();
     } catch (error) {
       if (returning) clearOAuthMarkers();
+      renderOnlineLoggedOut();
       setConnectionState(false, 'Account online temporaneamente non disponibile. Riprova tra poco.');
     }
   }
