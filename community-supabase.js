@@ -6,6 +6,42 @@
   let currentProfile = null;
   let realtimeChannel = null;
   let sessionRevision = 0;
+  let initializing = true, authEventRevision = 0, lastAuthSession = null, googleStarting = false;
+  const AUTH_PENDING_KEY = 'tb-oauth-started-at';
+  const callbackParams = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const queryParams = new URLSearchParams(location.search);
+  const callbackError = queryParams.get('error_description') || callbackParams.get('error_description') || queryParams.get('error') || callbackParams.get('error');
+  const callbackCode = queryParams.get('error_code') || callbackParams.get('error_code') || '';
+  const storage = {
+    get(key) { try { return localStorage.getItem(key); } catch { return null; } },
+    set(key,value) { try { localStorage.setItem(key,value); return true; } catch { return false; } },
+    remove(key) { try { localStorage.removeItem(key); } catch {} }
+  };
+  let returning = !!(callbackError || queryParams.get('code') || callbackParams.get('access_token') || queryParams.get('tb_auth') === 'complete' || Date.now() - Number(storage.get(AUTH_PENDING_KEY) || 0) < 15 * 60 * 1000);
+  function deadline(promise, ms=15000) {
+    let timer;
+    return Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Connessione account troppo lenta. Riprova.')),ms);})]).finally(()=>clearTimeout(timer));
+  }
+  function authErrorMessage(error, code='') {
+    const message=String(error?.message || error || '');
+    if (/Unable to exchange external code/i.test(message)) return 'Google non ha completato il collegamento con Trenino Bari. Il problema è nel servizio di accesso, non nella casella Privacy. Riferimento: TB-GOOGLE-EXCHANGE.';
+    if (/access_denied|cancelled|canceled/i.test(message+' '+code)) return 'Accesso Google annullato o non autorizzato. Puoi riprovare con “Continua con Google”.';
+    if (/flow_state|code_verifier|invalid.*code|expired/i.test(message+' '+code)) return 'Il tentativo di accesso è scaduto. Riparti da “Continua con Google” in questa scheda.';
+    if (/storage/i.test(message)) return 'Il browser non consente di salvare la sessione. Apri il sito in una scheda normale di Chrome e consenti i dati del sito.';
+    if (/fetch|network|timeout|troppo lenta/i.test(message)) return 'Connessione al servizio di accesso interrotta o troppo lenta. Riprova fra poco.';
+    return 'Non è stato possibile completare l’accesso. Riprova dal pulsante Google. Riferimento: TB-AUTH-FAILED.';
+  }
+  function showAuthError(error, code='') {
+    renderOnlineLoggedOut();
+    if ($('accountStatusTitle')) $('accountStatusTitle').textContent='Accesso non completato';
+    if ($('accountStatusText')) $('accountStatusText').textContent='Leggi il messaggio sotto e riprova';
+    showMessage(authErrorMessage(error,code),'error');
+    openCommunityView();
+  }
+  function finishOAuthReturn() {
+    if (!returning) return;
+    returning=false;storage.remove(AUTH_PENDING_KEY);clearOAuthMarkers();window.switchView?.('home');
+  }
   window.TBAuth = { get user() { return currentUser; }, get profile() { return currentProfile; },
     get client() { return db; }, refresh: () => syncVisibleSession(),
     async token() { const { data, error } = await db.auth.getSession(); if (error) throw error; return data.session?.access_token; } };
@@ -27,8 +63,10 @@
       box = document.createElement('div');
       box.id = 'accountMessage';
       box.className = 'account-message';
-      $('accountRoadmap')?.before(box);
+      $('joinCard')?.prepend(box);
     }
+    box.hidden = !text;
+    box.setAttribute('role', kind === 'error' ? 'alert' : 'status');
     box.textContent = text;
     box.className = 'account-message ' + (kind || '');
   }
@@ -61,20 +99,12 @@
     };
   }
 
-  function oauthReturnPending() {
-    return new URLSearchParams(location.search).get('tb_auth') === 'complete';
-  }
-
-  function oauthPopupIsOpen() {
-    return Boolean(window.opener && !window.opener.closed);
-  }
-
   function clearOAuthMarkers() {
     const url = new URL(location.href);
-    url.searchParams.delete('tb_auth');
-    url.searchParams.delete('view');
-    const query = url.searchParams.toString();
-    history.replaceState({}, document.title, url.pathname + (query ? '?' + query : '') + url.hash);
+    ['tb_auth','view','code','error','error_code','error_description'].forEach(key=>url.searchParams.delete(key));
+    const hash = new URLSearchParams(url.hash.replace(/^#/,''));
+    if (['access_token','refresh_token','error','error_code','error_description'].some(key=>hash.has(key))) url.hash='';
+    history.replaceState({}, document.title, url.pathname + url.search + url.hash);
   }
 
   function openCommunityView() {
@@ -83,7 +113,7 @@
 
   async function loadProfileSafely(user) {
     try {
-      return await loadProfile(user);
+      return await deadline(loadProfile(user),8000);
     } catch (error) {
       console.warn('Profilo remoto non ancora disponibile:', error.message);
       return profileFromMetadata(user);
@@ -93,23 +123,15 @@
   async function applySession(session) {
     const revision = ++sessionRevision;
     if (!session?.user) return renderOnlineLoggedOut();
-    const fallback = profileFromMetadata(session.user);
-    renderOnlineProfile(session.user, fallback);
-    if (localStorage.getItem('tb-pending-consent') === CONSENT_VERSION) {
-      await recordConsent(session.user);
-    }
-    const profile = await loadProfileSafely(session.user);
-    if (revision !== sessionRevision) return;
-    renderOnlineProfile(session.user, profile);
-    await loadOnlinePosts();
-    if (oauthReturnPending()) {
-      clearOAuthMarkers();
-      window.switchView('home');
-      if (oauthPopupIsOpen()) {
-        window.opener.postMessage({ type: 'tb-auth-complete' }, location.origin);
-        setTimeout(() => window.close(), 350);
-      }
-    }
+    showMessage('');
+    // Optional data requests must never block a valid authenticated session.
+    renderOnlineProfile(session.user, profileFromMetadata(session.user));
+    finishOAuthReturn();
+    if (storage.get('tb-pending-consent') === CONSENT_VERSION) deadline(recordConsent(session.user),8000).catch(()=>{});
+    loadProfileSafely(session.user).then(profile=>{
+      if (revision === sessionRevision && currentUser?.id === session.user.id) renderOnlineProfile(session.user,profile);
+    });
+    deadline(loadOnlinePosts(),8000).catch(()=>{});
   }
 
   async function loadProfile(user) {
@@ -204,32 +226,35 @@
       user_agent: navigator.userAgent.slice(0, 300)
     }, { onConflict: 'user_id,policy_version' });
     if (error) console.warn('Consenso non registrato:', error.message);
-    localStorage.removeItem('tb-pending-consent');
+    if (!error) storage.remove('tb-pending-consent');
   }
 
   window.signInSocial = async function (provider) {
-    if (provider !== 'google') return;
-    if (!db) return showMessage('Connessione account in corso. Riprova fra poco.', 'error');
+    if (provider !== 'google' || googleStarting) return;
+    if (!db || initializing) return showMessage('Connessione account in corso. Riprova fra poco.', 'error');
     const button = document.querySelector('button.google');
-    button.disabled = true;
-    button.setAttribute('aria-busy', 'true');
+    googleStarting=true;button.disabled=true;button.setAttribute('aria-busy','true');
+    showMessage('Ti stiamo collegando a Google…');
     try {
-      localStorage.setItem('tb-pending-consent', CONSENT_VERSION);
-      // Same-tab OAuth works on mobile and does not depend on popup/opener policies.
-      const { data, error } = await db.auth.signInWithOAuth({provider:'google',options:{
-        redirectTo:location.origin + location.pathname,
-        skipBrowserRedirect:true
-      }});
-      if (error) throw error;
-      if (!data?.url) throw new Error('Accesso Google non disponibile.');
+      if (!storage.set(AUTH_PENDING_KEY,String(Date.now()))) throw new Error('storage unavailable');
+      storage.set('tb-pending-consent', CONSENT_VERSION);
+      // Use the existing allow-listed root, never an old callback URL.
+      const { data, error } = await deadline(db.auth.signInWithOAuth({provider:'google',options:{
+        redirectTo:location.origin + '/',skipBrowserRedirect:true
+      }}));
+      if(error) throw error;
+      if(!data?.url) throw new Error('Accesso Google non disponibile.');
       location.assign(data.url);
-    } catch (error) {
-      localStorage.removeItem('tb-pending-consent');
-      showMessage(error.message, 'error');
-      button.disabled = false;
-      button.removeAttribute('aria-busy');
+    } catch(error) {
+      storage.remove(AUTH_PENDING_KEY);storage.remove('tb-pending-consent');
+      showMessage(authErrorMessage(error),'error');resetGoogleButton();
     }
   };
+  function resetGoogleButton() {
+    googleStarting=false;
+    const button=document.querySelector('button.google');
+    if(button){button.disabled=false;button.removeAttribute('aria-busy');}
+  }
 
   window.createOnlineAccount = async function () {
     if (!db) return showMessage('Connessione account in corso. Riprova fra poco.', 'error');
@@ -414,73 +439,59 @@
 
   async function syncVisibleSession() {
     if (!db) return;
-    const { data, error } = await db.auth.getSession();
-    if (error) return console.warn('Sincronizzazione sessione:', error.message);
+    const revision=authEventRevision;
+    const { data, error } = await deadline(db.auth.getSession());
+    if (error || revision!==authEventRevision) return;
     await applySession(data.session);
   }
 
-  window.addEventListener('message', (event) => {
-    if (event.origin !== location.origin || event.data?.type !== 'tb-auth-complete') return;
-    openCommunityView();
-    setTimeout(() => syncVisibleSession(), 150);
-  });
-
-  window.addEventListener('focus', () => {
-    setTimeout(() => syncVisibleSession(), 250);
-  });
-
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') setTimeout(() => syncVisibleSession(), 250);
-  });
-
-  window.addEventListener('storage', (event) => {
-    if (event.key && event.key.includes('auth-token')) setTimeout(() => syncVisibleSession(), 100);
+  window.addEventListener('focus', () => { if (!initializing) syncVisibleSession().catch(()=>{}); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && !initializing) syncVisibleSession().catch(()=>{}); });
+  window.addEventListener('storage', event => { if (event.key?.includes('auth-token') && !initializing) syncVisibleSession().catch(()=>{}); });
+  window.addEventListener('pageshow', event => {
+    resetGoogleButton();
+    if(callbackError && !currentUser && !initializing) openCommunityView();
+    if(event.persisted && !initializing) syncVisibleSession().catch(()=>{});
   });
 
   async function init() {
-    const returning = oauthReturnPending();
-    if (returning && oauthPopupIsOpen()) {
-      if ($('joinCard')) $('joinCard').style.display = 'none';
-      if ($('accountStatusTitle')) $('accountStatusTitle').textContent = 'Accesso in corso…';
-      if ($('accountStatusText')) $('accountStatusText').textContent = 'Stiamo ripristinando la tua sessione TB';
-      if ($('accountMode')) $('accountMode').textContent = 'CONNESSIONE';
-    }
+    if ($('accountStatusTitle')) $('accountStatusTitle').textContent='Verifica accesso…';
+    if ($('accountStatusText')) $('accountStatusText').textContent='Ripristino della sessione TB';
     try {
-      const response = await fetch('/api/supabase-config', { headers: { Accept: 'application/json' } });
+      if(callbackError){clearOAuthMarkers();storage.remove(AUTH_PENDING_KEY);}
+      const response = await fetch('/api/supabase-config', {cache:'no-store',headers:{Accept:'application/json'},signal:AbortSignal.timeout(15000)});
       const config = await response.json();
       if (!response.ok || !config.configured || !window.supabase) throw new Error('Configurazione Supabase non disponibile.');
       db = window.supabase.createClient(config.url, config.key, {
-        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+        auth: {persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
       });
       setConnectionState(true);
-
-      let { data } = await db.auth.getSession();
-      if (!data.session && returning) {
-        for (let attempt = 0; attempt < 5 && !data.session; attempt += 1) {
-          await new Promise((resolve) => setTimeout(resolve, 350));
-          ({ data } = await db.auth.getSession());
-        }
-      }
-      if (data.session) await applySession(data.session);
-      else {
-        if (returning) clearOAuthMarkers();
-        renderOnlineLoggedOut(returning ? 'Accesso Google non completato. Riprova dal pulsante dedicato.' : '');
-      }
-
-      await loadOnlinePosts();
-      db.auth.onAuthStateChange((_event, session) => {
-        setTimeout(() => applySession(session).catch((error) => {
-          console.warn('Aggiornamento sessione non riuscito:', error.message);
-        }), 0);
+      // Subscribe before any other request. Do not await Auth inside its callback.
+      db.auth.onAuthStateChange((_event,session)=>{
+        authEventRevision++;lastAuthSession=session;
+        if(initializing) return;
+        setTimeout(()=>applySession(session).catch(()=>{}),0);
       });
-      realtimeChannel = db.channel('tb-community-posts')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadOnlinePosts)
-        .subscribe();
-    } catch (error) {
-      if (returning) clearOAuthMarkers();
-      renderOnlineLoggedOut();
-      setConnectionState(false, 'Account online temporaneamente non disponibile. Riprova tra poco.');
-    }
+      const revision=authEventRevision;
+      const {data,error}=await deadline(db.auth.getSession());
+      if(error) throw error;
+      const session=authEventRevision===revision ? data.session : lastAuthSession;
+      initializing=false;
+      if(session) await applySession(session);
+      else if(callbackError) showAuthError(callbackError,callbackCode);
+      else if(returning) {
+        storage.remove(AUTH_PENDING_KEY);clearOAuthMarkers();returning=false;
+        showAuthError('Accesso non completato');
+      } else renderOnlineLoggedOut();
+      deadline(loadOnlinePosts(),8000).catch(()=>{});
+      realtimeChannel=db.channel('tb-community-posts')
+        .on('postgres_changes',{event:'*',schema:'public',table:'posts'},loadOnlinePosts).subscribe();
+    } catch(error) {
+      initializing=false;
+      if(returning){clearOAuthMarkers();storage.remove(AUTH_PENDING_KEY);returning=false;}
+      setConnectionState(!!db);showAuthError(callbackError || error,callbackCode);
+    } finally {resetGoogleButton();}
   }
-  document.addEventListener('DOMContentLoaded', init);
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
 })();
