@@ -124,6 +124,14 @@
   window.renderPrediction=()=>{};window.renderPredictionComments=()=>{};
   $('predComments').textContent='I commenti condivisi saranno disponibili con i pronostici online.';
   $('tbPrediction').querySelector('.pred-summary').hidden=true;
+  $('tbPrediction').querySelector('.prediction-head h3').textContent='Caricamento prossima partita…';
+  $('tbPrediction').querySelector('.prediction-head small').textContent='';
+  fetch('/data/fixtures.json').then(r=>r.json()).then(data=>{
+    if(!state){
+      const fixture=data.fixtures?.find(f=>Date.parse(f.kickoff)>Date.now());
+      renderFixture({fixture,predictions:[]});
+    }
+  }).catch(()=>{$('tbPrediction').querySelector('.prediction-head h3').textContent='Calendario pronostici da verificare';});
   window.renderCommunityProfile=()=>{};
   window.joinCommunity=()=>notify('Usa Google o email per creare un vero account TB.');
   const shareText='🐓❤️🤍 Sali sul Trenino Bari! News, video, partite e una community tutta biancorossa. ⚽ Fai il tuo pronostico, sfida gli amici ai rigori e cresci con noi. Forza Bari! 🚂';
@@ -186,12 +194,8 @@
     }catch(error){penaltyGame.animating=false;notify(error.message);}
   };
   // Visitors can still practice without writing account points.
-  const practice=document.createElement('button');
-  practice.type='button';practice.className='account-secondary';practice.textContent='⚽ Allenamento libero · senza XP';
-  practice.onclick=()=>{
-    if(penaltyGame.animating)return;penaltyGame.animating=true;
-    penaltyAnimate(penaltyRandomDir(),penaltyRandomDir(),()=>{setPenaltyLog('⚽ Allenamento libero completato. Nessun punto account assegnato.');penaltyGame.animating=false;});
-  };
+  const practice=document.createElement('p');
+  practice.className='section-note';practice.textContent='Senza accesso o connessione al servizio XP puoi usare gli stessi comandi per allenarti, senza punti account.';
   $('tbGameLog').after(practice);
   window.resetPenaltyProgress=()=>notify('I progressi sono legati al tuo account e non vengono azzerati dal browser.');
   const oldFilter=window.filterNews;
@@ -202,7 +206,7 @@
     empty.hidden=[...$('allNews').children].some(x=>x.style.display!=='none');
   };
   async function prepareArticles(){
-    for(const card of document.querySelectorAll('#view-home article.post,#allNews article')){
+    for(const card of document.querySelectorAll('#view-home article.post,#bari-videos .tb-video-card,#allNews article')){
       const source=card.querySelector('.source-line a')?.getAttribute('href'),vid=card.dataset.videoId;
       if(!source&&!vid)continue;
       const id=vid?'v-'+vid:'n-'+[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(source)))].map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,32);
