@@ -1003,6 +1003,22 @@ img{display:block;max-width:100%}
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 }
+
+/* TB VIDEO: verified editorial video cards, click-to-load YouTube */
+.tb-video-list{display:grid;gap:12px}
+.tb-video-card{overflow:hidden;border:1px solid var(--line);border-radius:20px;background:var(--card);box-shadow:0 7px 22px rgba(0,0,0,.045)}
+.tb-video-screen{aspect-ratio:16/9;min-height:200px;background:#171719;display:grid;place-items:center}
+.tb-video-screen iframe{width:100%;height:100%;min-height:200px;border:0}
+.tb-video-play{width:100%;height:100%;min-height:200px;border:0;padding:20px;background:linear-gradient(135deg,#75080e,#c9141c);color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;font-size:18px;font-weight:900}
+.tb-video-play:focus-visible{outline:3px solid #fff;outline-offset:-6px}
+.tb-video-play span{font-size:40px}
+.tb-video-info{padding:14px}
+.tb-video-info h3{font-size:22px;line-height:1.2;margin:7px 0}
+.tb-video-info p{font-size:14px;line-height:1.45;color:var(--muted);margin:6px 0}
+.tb-video-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:12px}
+.tb-video-actions a{font-size:14px;font-weight:850;color:var(--red)}
+.tb-video-close{border:1px solid var(--line);border-radius:10px;background:white;padding:8px 12px;cursor:pointer;font-size:14px}
+
 </style>
 </head>
 <body>
@@ -1070,6 +1086,50 @@ img{display:block;max-width:100%}
       </div>
     </div>
   </section>
+
+
+  <!-- TB_VIDEOS_START: prepend verified cards here; deduplicate by data-video-id. -->
+  <section class="section" id="bari-videos" aria-labelledby="bari-videos-title">
+    <div class="section-head"><h2 id="bari-videos-title">🎬 Video del Bari</h2><small>Highlights e post partita</small></div>
+    <p class="section-note">Le immagini della partita e le voci dei protagonisti. Tocca ▶ per guardare qui: il lettore YouTube si carica solo quando lo scegli.</p>
+    <div class="tb-video-list">
+      <article class="tb-video-card" data-video-id="VkN95HiXseg">
+        <div class="tb-video-screen"><button class="tb-video-play" type="button" aria-label="Guarda gli highlights SSC Bari"><span aria-hidden="true">▶</span>Guarda il video</button></div>
+        <div class="tb-video-info">
+          <span class="badge official">🐓 VIDEO · SSC BARI</span>
+          <h3>Altamura–Bari 0-3: i gol e gli highlights</h3><p>Maggiore, Darboe e Butić nel video pubblicato da SSC Bari dopo la partita dell’11 settembre 2026.</p>
+          <div class="tb-video-actions"><a href="https://www.youtube.com/watch?v=VkN95HiXseg" target="_blank" rel="noopener">Guarda su YouTube ↗</a><button class="tb-video-close" type="button" hidden>Chiudi video</button></div>
+          <p>Se YouTube limita la riproduzione qui, usa “Guarda su YouTube”.</p>
+        </div>
+      </article>
+
+      <article class="tb-video-card" data-video-id="L-29gxSGfgI">
+        <div class="tb-video-screen"><button class="tb-video-play" type="button" aria-label="Guarda Rastelli nel post partita"><span aria-hidden="true">▶</span>Guarda il video</button></div>
+        <div class="tb-video-info">
+          <span class="badge official">🐓 VIDEO · SSC BARI</span>
+          <h3>Rastelli: il video del post partita</h3><p>La conferenza di Massimo Rastelli dopo Altamura–Bari, pubblicata dal canale SSC Bari.</p>
+          <div class="tb-video-actions"><a href="https://www.youtube.com/watch?v=L-29gxSGfgI" target="_blank" rel="noopener">Guarda su YouTube ↗</a><button class="tb-video-close" type="button" hidden>Chiudi video</button></div>
+          <p>Se YouTube limita la riproduzione qui, usa “Guarda su YouTube”.</p>
+        </div>
+      </article>
+      <article class="tb-video-card" data-video-id="IZrbyNzZx3k">
+        <div class="tb-video-screen">
+          <button class="tb-video-play" type="button" aria-label="Guarda Altamura–Bari 0-3"><span aria-hidden="true">▶</span>Guarda il video</button>
+        </div>
+        <div class="tb-video-info">
+          <span class="badge analysis">📺 SERVIZIO TV · ANTENNA SUD</span>
+          <h3>Altamura–Bari 0-3: il servizio della partita</h3>
+          <p>Il video di Antenna Sud – canale 14 dedicato al derby dell’11 settembre 2026.</p>
+          <div class="tb-video-actions">
+            <a href="https://www.youtube.com/watch?v=IZrbyNzZx3k" target="_blank" rel="noopener">Guarda su YouTube ↗</a>
+            <button class="tb-video-close" type="button" hidden>Chiudi video</button>
+          </div>
+          <p>Se YouTube limita la riproduzione qui, usa “Guarda su YouTube”.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+  <!-- TB_VIDEOS_END -->
 
   <div class="section">
     <div class="section-head">
@@ -3657,5 +3717,50 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js" defer></script>
 <script src="/community-supabase.js?v=20260911-home2" defer></script>
+
+<script>
+/* TB video player: no downloads or rehosting; the source retains playback controls. */
+(()=>{
+  const root=document.getElementById('bari-videos');
+  if(!root)return;
+  const placeholders=new Map();
+  root.querySelectorAll('.tb-video-card').forEach(card=>{
+    placeholders.set(card,card.querySelector('.tb-video-screen').innerHTML);
+  });
+  function close(card){
+    card.querySelector('.tb-video-screen').innerHTML=placeholders.get(card);
+    card.querySelector('.tb-video-close').hidden=true;
+  }
+  function closeAll(){root.querySelectorAll('.tb-video-card').forEach(close);}
+  root.addEventListener('click',event=>{
+    const button=event.target.closest('button');
+    if(!button)return;
+    const card=button.closest('.tb-video-card');
+    if(!card)return;
+    if(button.classList.contains('tb-video-close')){
+      close(card);card.querySelector('.tb-video-play').focus();return;
+    }
+    if(!button.classList.contains('tb-video-play'))return;
+    const id=card.dataset.videoId;
+    if(!/^[A-Za-z0-9_-]{11}$/.test(id))return;
+    closeAll();
+    const frame=document.createElement('iframe');
+    frame.title=card.querySelector('h3').textContent;
+    frame.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&playsinline=1&rel=0';
+    frame.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';
+    frame.allowFullscreen=true;
+    frame.referrerPolicy='strict-origin-when-cross-origin';
+    card.querySelector('.tb-video-screen').replaceChildren(frame);
+    card.querySelector('.tb-video-close').hidden=false;
+    frame.focus();
+  });
+  const home=document.getElementById('view-home');
+  if(home)new MutationObserver(()=>{
+    if(!home.classList.contains('active'))closeAll();
+  }).observe(home,{attributes:true,attributeFilter:['class']});
+  window.addEventListener('pagehide',closeAll);
+})();
+</script>
+
 </body>
 </html>
