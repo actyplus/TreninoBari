@@ -1023,6 +1023,7 @@ img{display:block;max-width:100%}
 <link rel="stylesheet" href="/member.css?v=20260912-members">
 <link rel="stylesheet" href="/assets/matches.css?v=20260912-2">
 <script defer src="/assets/matches.js?v=20260912-2"></script>
+<link rel="stylesheet" href="/traffic.css?v=20260913">
 </head>
 <body>
 <div class="app">
@@ -3019,7 +3020,7 @@ function openLegal(type){
   <p>Il trattamento necessario al servizio si basa sull'esecuzione della richiesta dell'utente; sicurezza e moderazione sul legittimo interesse; eventuali funzioni facoltative sul consenso. Supabase gestisce autenticazione e database, Vercel ospita il sito; Google o Meta intervengono soltanto se scelti per l'accesso.</p>
   <h3>Conservazione e visibilità</h3>
   <p>L'email non viene mostrata pubblicamente. Nickname e contenuti pubblicati sono visibili nella Community. I dati restano finché l'account è attivo o per il tempo necessario a gestire richieste, sicurezza e obblighi applicabili; l'utente può chiedere o avviare la cancellazione.</p>
-  <h3>Diritti e minori</h3>
+  <h3>Statistiche facoltative del sito</h3><p>Solo se scegli “Consenti statistiche”, TB registra visite, pagine aperte e presenze recenti, distinguendo account e ospiti. Un identificativo casuale nel browser viene rinnovato dopo 30 minuti senza attività; sul server gli identificativi sono trasformati in codici pseudonimi, senza salvare email o indirizzi IP in chiaro nelle tabelle statistiche. I codici delle sessioni scadute vengono rimossi alla successiva raccolta, dopo 35 minuti di inattività; restano i totali aggregati. L’indirizzo di rete viene utilizzato temporaneamente per limitare richieste abusive. Nessuna profilazione pubblicitaria. Puoi revocare la scelta dai pannelli “Insieme su Trenino Bari”, in Home e Community.</p><h3>Diritti e minori</h3>
   <p>Dal Centro privacy si possono esercitare accesso, rettifica, esportazione, limitazione e cancellazione. Il sito informativo è accessibile a tutti; per creare un account l'utente dichiara di avere almeno 14 anni oppure l'autorizzazione di chi esercita la responsabilità genitoriale.</p>
   <p><b>Versione:</b> 1.0 · 6 settembre 2026. Modifiche sostanziali richiederanno una nuova accettazione.</p>`;
   const terms=`<h2>📜 Regolamento Community TB · v1.0</h2>
@@ -3029,7 +3030,7 @@ function openLegal(type){
   <p><b>Versione:</b> 1.0 · 6 settembre 2026.</p>`;
   const cookie=`<h2>🍪 Cookie e memoria locale · v1.0</h2>
   <p>TB utilizza memoria locale e token tecnici necessari per sessione, sicurezza, preferenze, consenso, dimensione caratteri e funzioni di gioco. Questi elementi sono indispensabili al servizio richiesto.</p>
-  <p>Le reazioni sono associate all’account. Le letture sono deduplicate per giornata con identificativi pseudonimi. Gli XP registrano le azioni premiate; la classifica pubblica mostra nickname e punti solo se scelta dal profilo. Gli inviti collegano il codice condiviso alla nuova registrazione verificata.</p><p>Non sono attivi pubblicità comportamentale o profilazione commerciale. L'accesso con Google o Meta comporta il passaggio al fornitore scelto; i relativi cookie sono regolati anche dalle informative di quel fornitore. Eventuali analytics o servizi non essenziali saranno attivati solo dopo un consenso separato.</p>`;
+  <p>Le reazioni sono associate all’account. Le letture sono deduplicate per giornata con identificativi pseudonimi. Gli XP registrano le azioni premiate; la classifica pubblica mostra nickname e punti solo se scelta dal profilo. Gli inviti collegano il codice condiviso alla nuova registrazione verificata.</p><p>Non sono attivi pubblicità comportamentale o profilazione commerciale. L'accesso con Google o Meta comporta il passaggio al fornitore scelto; i relativi cookie sono regolati anche dalle informative di quel fornitore. Le statistiche facoltative si attivano esclusivamente con la scelta separata “Consenti statistiche” nei pannelli di Home e Community. La scelta precedente “Accetta” non le abilita. Puoi disattivarle dagli stessi pannelli; il rifiuto non impedisce accesso, navigazione o interazioni.</p>`;
   document.getElementById('legalContent').innerHTML=type==='sources'?sources:(type==='privacy'?privacy:(type==='terms'?terms:cookie));
   document.getElementById('legalModal').classList.add('show');
 }
@@ -3757,10 +3758,11 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js" defer></script>
-<script src="/community-supabase.js?v=20260912-auth2" defer></script>
+<script src="/community-supabase.js?v=20260913-auth3" defer></script>
 
 <script src="/video-news.js?v=20260912-2" defer></script>
 <script src="/member.js?v=20260912" defer></script>
+<script src="/traffic.js?v=20260913" defer></script>
 
 </body>
 </html>

@@ -6,6 +6,7 @@
   let currentProfile = null;
   let realtimeChannel = null;
   let sessionRevision = 0;
+  let emailStarting = false;
   let initializing = true, authEventRevision = 0, lastAuthSession = null, googleStarting = false;
   const AUTH_PENDING_KEY = 'tb-oauth-started-at';
   const callbackParams = new URLSearchParams(location.hash.replace(/^#/, ''));
@@ -25,6 +26,7 @@
   function authErrorMessage(error, code='') {
     const message=String(error?.message || error || '');
     if (/Unable to exchange external code/i.test(message)) return 'Google non ha completato il collegamento con Trenino Bari. Il problema è nel servizio di accesso, non nella casella Privacy. Riferimento: TB-GOOGLE-EXCHANGE.';
+    if (/database error saving new user/i.test(message)) return 'Il servizio non riesce a creare il profilo TB. Riferimento: TB-AUTH-DATABASE. La registrazione deve essere ripristinata dal gestore.';
     if (/access_denied|cancelled|canceled/i.test(message+' '+code)) return 'Accesso Google annullato o non autorizzato. Puoi riprovare con “Continua con Google”.';
     if (/flow_state|code_verifier|invalid.*code|expired/i.test(message+' '+code)) return 'Il tentativo di accesso è scaduto. Riparti da “Continua con Google” in questa scheda.';
     if (/storage/i.test(message)) return 'Il browser non consente di salvare la sessione. Apri il sito in una scheda normale di Chrome e consenti i dati del sito.';
@@ -44,7 +46,7 @@
   }
   window.TBAuth = { get user() { return currentUser; }, get profile() { return currentProfile; },
     get client() { return db; }, refresh: () => syncVisibleSession(),
-    async token() { const { data, error } = await db.auth.getSession(); if (error) throw error; return data.session?.access_token; } };
+    async token() { if (!db) return null; const { data, error } = await deadline(db.auth.getSession()); if (error) throw error; return data.session?.access_token; } };
   function announceSession() {
     document.documentElement.classList.remove('tb-auth-loading');
     document.documentElement.classList.toggle('tb-authenticated', !!currentUser);
@@ -82,7 +84,7 @@
     }
     if (road) {
       road.innerHTML = online
-        ? '<b>✅ Database TB collegato.</b> Account, post e sessione possono essere sincronizzati fra telefono e PC.'
+        ? '<b>🔐 Servizio account raggiungibile.</b> Lo stato di accesso è indicato nel tuo TB ID.'
         : '<b>⚠️ Account non raggiungibile.</b> Notizie, video e navigazione restano disponibili.';
     }
     if (!online && text) showMessage(text, 'error');
@@ -200,11 +202,11 @@
     if (message) showMessage(message, 'ok');
   }
 
-  function readCredentials() {
+  function readCredentials(signup = false) {
     const email = ($('joinEmail')?.value || '').trim().toLowerCase();
     const password = $('joinPassword')?.value || '';
     if (!email || !email.includes('@')) throw new Error('Inserisci un indirizzo email valido.');
-    if (password.length < 8) throw new Error('La password deve contenere almeno 8 caratteri.');
+    if (!password || (signup && password.length < 8)) throw new Error(signup ? 'La password deve contenere almeno 8 caratteri.' : 'Inserisci la password del tuo account.');
     return { email, password };
   }
 
@@ -256,60 +258,77 @@
     if(button){button.disabled=false;button.removeAttribute('aria-busy');}
   }
 
+  function emailBusy(busy) {
+    emailStarting = busy;
+    document.querySelectorAll('[onclick="createOnlineAccount()"],[onclick="loginOnlineAccount()"]').forEach(button => {
+      button.disabled = busy;
+      button.setAttribute('aria-busy', String(busy));
+    });
+  }
+  function emailError(error) {
+    const message = String(error?.message || '');
+    if (/database error saving new user/i.test(message)) return authErrorMessage(error);
+    if (/invalid login credentials/i.test(message)) return 'Email o password non corrette. Se ti sei registrato con Google, usa Continua con Google.';
+    if (/email not confirmed/i.test(message)) return 'Conferma prima l’indirizzo email usando il messaggio ricevuto da Trenino Bari.';
+    if (/rate|too many|security purposes/i.test(message)) return 'Troppi tentativi ravvicinati. Attendi qualche minuto prima di riprovare.';
+    return message || 'Accesso non riuscito. Riprova.';
+  }
   window.createOnlineAccount = async function () {
-    if (!db) return showMessage('Connessione account in corso. Riprova fra poco.', 'error');
+    if (!db || initializing) return showMessage('Connessione account in corso. Riprova fra poco.', 'error');
+    if (emailStarting) return;
+    emailBusy(true);
     try {
       requireConsent();
-      const { email, password } = readCredentials();
+      const { email, password } = readCredentials(true);
       const nickname = ($('joinNick')?.value || '').trim();
-      if (nickname.length < 2) throw new Error('Scegli un nickname di almeno 2 caratteri.');
-      localStorage.setItem('tb-pending-consent', CONSENT_VERSION);
+      if (nickname.length < 2 || nickname.length > 24) throw new Error('Scegli un nickname da 2 a 24 caratteri.');
+      if (!storage.set('tb-pending-consent', CONSENT_VERSION)) throw new Error('Il browser non consente di salvare la sessione.');
       showMessage('Creazione dell’account in corso…');
-      const { data, error } = await db.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: location.origin,
-          data: {
-            nickname,
-            city: ($('joinCity')?.value || '').trim(),
-            supporter_years: $('joinYears')?.value || ''
-          }
-        }
-      });
+      const { data, error } = await deadline(db.auth.signUp({email, password, options: {
+        emailRedirectTo: location.origin + '/',
+        data: {nickname, city: ($('joinCity')?.value || '').trim().slice(0,30), supporter_years: $('joinYears')?.value || ''}
+      }}));
       if (error) throw error;
-      if (data.session && data.user) {
-        await recordConsent(data.user);
-        const profile = await loadProfile(data.user);
-        renderOnlineProfile(data.user, profile);
-        await loadOnlinePosts();
+      if (data.session?.user) {
+        await applySession(data.session);
+        window.switchView?.('home');
       } else {
-        renderOnlineLoggedOut();
-        showMessage('Account creato. Controlla l’email e conferma il collegamento per entrare.', 'ok');
+        showMessage('Controlla la posta e lo spam: se la registrazione può essere completata, riceverai il link di conferma. Se hai già un account, usa Accedi.', 'ok');
       }
-    } catch (error) {
-      showMessage(error.message || 'Impossibile creare l’account.', 'error');
-    }
+    } catch (error) { showMessage(emailError(error), 'error'); }
+    finally { emailBusy(false); }
   };
 
   window.loginOnlineAccount = async function () {
-    if (!db) return showMessage('Connessione account in corso. Riprova fra poco.', 'error');
+    if (!db || initializing) return showMessage('Connessione account in corso. Riprova fra poco.', 'error');
+    if (emailStarting) return;
+    emailBusy(true);
     try {
       const { email, password } = readCredentials();
       showMessage('Accesso in corso…');
-      const { data, error } = await db.auth.signInWithPassword({ email, password });
+      const { data, error } = await deadline(db.auth.signInWithPassword({ email, password }));
       if (error) throw error;
+      if (!data.session?.user) throw new Error('Il servizio non ha restituito una sessione. Riprova.');
       await applySession(data.session);
-    } catch (error) {
-      showMessage(error.message || 'Accesso non riuscito.', 'error');
-    }
+      window.switchView?.('home');
+    } catch (error) { showMessage(emailError(error), 'error'); }
+    finally { emailBusy(false); }
   };
 
   window.logoutCommunity = async function () {
-    if (!db) return localLogoutCommunity();
+    if (!db || !currentUser) return;
     if (!confirm('Vuoi uscire dal tuo account TB?')) return;
-    await db.auth.signOut();
-    renderOnlineLoggedOut('Sei uscito correttamente dal tuo account TB.');
+    try {
+      const { error } = await deadline(db.auth.signOut());
+      if (error) throw error;
+      ++sessionRevision;
+      storage.remove(AUTH_PENDING_KEY);
+      renderOnlineLoggedOut('Sei uscito correttamente dal tuo account TB.');
+      window.switchView?.('home');
+    } catch (error) {
+      // Keep a valid identity visible when logout failed. Never claim it succeeded.
+      window.alert('Uscita non completata. La sessione potrebbe essere ancora attiva. Riprova.');
+    }
   };
 
   window.editCommunityProfile = async function () {
@@ -495,3 +514,4 @@
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
 })();
+
