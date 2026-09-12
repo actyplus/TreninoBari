@@ -13,3 +13,11 @@ Video: aggiornare solo #bari-videos tra TB_VIDEOS_START/END, massimo 6 schede pe
 member.js aggiunge interazioni: preservare .source-line e il link canonico. Non scrivere contatori/XP e non modificare file account o migrazioni durante aggiornamenti editoriali. Conservare Home come vista iniziale.
 
 Prima del commit rileggere main per integrare modifiche concorrenti, controllare coerenza numerica e temporale; dopo il commit verificare HTML, titolo e contenuti online. Nessuna notifica senza novità.
+
+## Classifica e statistiche: controllo delle tabelle
+
+A giornata in corso aggiornare le righe reali della classifica con tutti i risultati già conclusi e i dati della Lega Pro, indicando «provvisoria» e data/ora di verifica. Non lasciare una vecchia tabella sotto un riepilogo aggiornato. Riportare l'ordine ufficiale soltanto se verificato; altrimenti non attribuire una posizione. Non aspettare la fine del turno per aggiornare PG, GF, GS e punti confermati.
+
+Dopo ogni gara di campionato ricalcolare presenze e gol della rosa da tutte le distinte di campionato: una presenza per titolare o subentrato, nessuna per la sola panchina. Escludere la Coppa Italia e distinguere i giocatori ceduti. Includere i nuovi arrivi anche nelle righe statistiche, oltre al riepilogo dei trasferimenti. Se un numero di maglia non è verificato, usare «—».
+
+Confrontare Home, classifica, Marcatori Bari e Rosa: partite, punti e gol devono concordare. La somma dei gol individuali, più eventuali autoreti avversarie verificate, deve coincidere con i gol fatti della squadra. Verificare che i dati siano nelle tabelle visibili, non soltanto nei titoli o nelle note. Conservare i link ai tabellini utilizzati. Il 12 settembre 2026 le prime quattro gare sono Bari-Cavese, Barletta-Bari, Bari-Casarano e Altamura-Bari.
