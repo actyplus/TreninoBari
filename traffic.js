@@ -9,14 +9,14 @@
   const remove=key=>{try{localStorage.removeItem(key);}catch{}};
   enabled=read(consentKey)==='yes';
   const panels=[];
-  for(const view of ['home','community']) {
+  for(const view of ['community']) {
     const host=document.getElementById('view-'+view);
     if(!host)continue;
     const panel=document.createElement('section');
     panel.className='section tb-traffic';panel.setAttribute('aria-label','Visite e presenze sul sito');
-    panel.innerHTML='<div class="section-head"><h2>🐓 Insieme su Trenino Bari</h2><small>Presenze stimate · ultimi 2 minuti</small></div><div class="tb-traffic-grid"><div><strong data-count="members">—</strong><span>Utenti con accesso</span></div><div><strong data-count="guests">—</strong><span>Ospiti online</span></div><div><strong data-count="visits">—</strong><span>Visite totali misurate</span></div><div><strong data-count="pageviews">—</strong><span>Pagine aperte</span></div></div><p data-status role="status">Verifica statistiche…</p><details><summary>Come vengono contate · Preferenze</summary><p>Contiamo anche gli ospiti che scelgono di partecipare alle statistiche. Una visita termina dopo 30 minuti senza attività; ricaricare la pagina aumenta le pagine aperte, non crea subito una nuova visita. Gli utenti con accesso sono deduplicati per account; gli ospiti per browser. Le presenze indicano una pagina visibile negli ultimi 2 minuti, non persone identificate con certezza.</p><p>Con il tuo consenso salviamo un identificativo casuale temporaneo nel browser e inviamo segnali di presenza a TB. Non usiamo questi dati per pubblicità. Puoi disattivare le statistiche in qualsiasi momento; accesso e sito continuano a funzionare.</p></details><div class="tb-traffic-consent"><span data-choice></span><button type="button" data-enable>Consenti statistiche</button><button type="button" data-disable>Non partecipare</button></div>';
+    panel.innerHTML="<div class=\"section-head\"><h2>La community in numeri</h2></div><dl class=\"tb-traffic-grid\"><div><dt>Iscritti online</dt><dd data-count=\"members\">—</dd></div><div><dt>Ospiti online</dt><dd data-count=\"guests\">—</dd></div><div><dt>Visite totali</dt><dd data-count=\"visits\">—</dd></div><div><dt>Pagine viste</dt><dd data-count=\"pageviews\">—</dd></div></dl><p class=\"tb-traffic-status\" data-status role=\"status\">Caricamento dati…</p><details><summary>Informazioni e preferenze</summary><p>Le presenze sono stimate sulle pagine visibili negli ultimi 2 minuti. Contiamo solo chi sceglie di partecipare: gli iscritti sono deduplicati per account, gli ospiti per browser.</p><p>Una visita termina dopo 30 minuti senza attività. Ricaricare una pagina aumenta le pagine viste, senza creare subito una nuova visita.</p><p>Con il tuo consenso salviamo un identificativo casuale temporaneo nel browser e inviamo segnali di presenza a TB. Puoi cambiare scelta in qualsiasi momento.</p><div class=\"tb-traffic-consent\"><span data-choice></span><button type=\"button\" data-enable>Consenti statistiche</button><button type=\"button\" data-disable>Non partecipare</button></div></details>";
     const first=host.querySelector('.section');
-    if(first)first.before(panel);else host.append(panel);
+    if(first)first.after(panel);else host.append(panel);
     panels.push(panel);
   }
   const all=selector=>panels.flatMap(p=>[...p.querySelectorAll(selector)]);
@@ -37,11 +37,11 @@
     if(!['members','guests','visits','pageviews'].every(k=>Number.isSafeInteger(data[k])&&data[k]>=0))throw new Error('INVALID_DATA');
     for(const k of ['members','guests','visits','pageviews'])all('[data-count="'+k+'"]').forEach(el=>el.textContent=data[k].toLocaleString('it-IT'));
     const since=data.started_at?new Date(data.started_at).toLocaleDateString('it-IT'):null;
-    all('[data-status]').forEach(el=>el.textContent=(since?'Dati raccolti dal '+since+'. ':'Nessuna visita ancora misurata. ')+'Solo visitatori che partecipano alle statistiche.');
+    all('[data-status]').forEach(el=>el.textContent=(since?'Dal '+since+' · ':'')+'Presenze stimate · solo partecipanti alle statistiche.');
   }
   function unavailable(){
     all('[data-count]').forEach(el=>el.textContent='—');
-    all('[data-status]').forEach(el=>el.textContent='Statistiche non ancora disponibili. Nessun numero stimato viene mostrato come dato reale.');
+    all('[data-status]').forEach(el=>el.textContent='Dati non ancora disponibili.');
   }
   async function poll(){
     if(busy || document.hidden)return;
