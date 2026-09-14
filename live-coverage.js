@@ -124,11 +124,63 @@
     }
   }
 
+  function hideNewsCoverage() {
+    const card = $('newsMatchCoverage');
+    if (!card) return;
+    card.hidden = true;
+    card.dataset.runtimeActive = 'false';
+    card.style.display = 'none';
+    if (typeof window.filterNews === 'function') window.filterNews();
+  }
+
+  function renderNewsCoverage(fixture, coverage, kickoff, now, isLive) {
+    const card = $('newsMatchCoverage');
+    if (!card) return;
+
+    const match = fixture.home + '–' + fixture.away;
+    const access = coverage.access || 'checking';
+    const provider = coverage.provider || 'disponibilità video in verifica';
+    const isFree = access === 'free-embed' || access === 'free-link';
+    let status = '🔎 Diretta video in verifica';
+
+    if (isFree) status = '📺 Gratis · ' + provider;
+    else if (access === 'paid') status = '🔒 ' + provider + ' · abbonamento';
+    else if (access === 'none') status = '🎙️ TB Live · radio e cronaca';
+
+    card.hidden = false;
+    card.dataset.runtimeActive = 'true';
+    card.style.removeProperty('display');
+    $('newsMatchCoverageBadge').className = 'badge ' + (isLive ? 'official' : 'analysis');
+    $('newsMatchCoverageBadge').textContent = isLive ? '🔴 PARTITA IN CORSO' : '📡 GUIDA PREPARTITA';
+    $('newsMatchCoverageTime').textContent = countdown(kickoff, now);
+    $('newsMatchCoverageTitle').textContent = isLive
+      ? match + ': segui la partita su TB'
+      : match + ': dove seguirla e vivere il prepartita';
+    $('newsMatchCoverageText').textContent = isLive
+      ? (isFree
+          ? 'Diretta video ufficiale disponibile: dalla copertura TB puoi aprire il player, seguire la cronaca descrittiva e partecipare con gli altri tifosi.'
+          : 'Segui la voce di Michele Salomone, la cronaca descrittiva e le interazioni della community nella copertura partita.')
+      : (isFree
+          ? 'Diretta gratuita ufficiale confermata. Nella copertura partita trovi fonte, orario, condivisione e accesso alla community.'
+          : 'La disponibilità video è indicata senza ambiguità; durante la gara restano disponibili radiocronaca, cronaca descrittiva e community.');
+    $('newsMatchCoverageStatus').textContent = status;
+    $('newsMatchCoverageKickoff').textContent = formatKickoff(fixture.kickoff);
+
+    const source = safeHttps(coverage.source || fixture.source);
+    const sourceLink = $('newsMatchCoverageSource');
+    if (source) sourceLink.href = source.href;
+    sourceLink.textContent = (coverage.sourceName || 'Fonte ufficiale') + ' ↗';
+    $('newsMatchCoverageSourceNote').textContent = formatConfirmed(coverage.confirmedAt);
+
+    if (typeof window.filterNews === 'function') window.filterNews();
+  }
+
   function render() {
     const fixture = state.fixture;
     const shell = $('matchCoverage');
     if (!fixture || !shell) {
       if (shell) shell.hidden = true;
+      hideNewsCoverage();
       return;
     }
 
@@ -136,6 +188,7 @@
     const kickoff = Date.parse(fixture.kickoff);
     if (now < kickoff - WINDOW_BEFORE || now > kickoff + WINDOW_AFTER) {
       shell.hidden = true;
+      hideNewsCoverage();
       return;
     }
 
@@ -158,6 +211,7 @@
           : 'Condividi l’appuntamento: durante la gara troverai radiocronaca, cronaca descrittiva e interazioni della community.');
 
     renderProvider(coverage, isLive);
+    renderNewsCoverage(fixture, coverage, kickoff, now, isLive);
 
     const source = safeHttps(coverage.source || fixture.source);
     const sourceLink = $('matchCoverageSource');
@@ -192,6 +246,11 @@
     setTimeout(() => target?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
   };
 
+  window.openNewsMatchCoverage = () => {
+    if (typeof window.switchView === 'function') window.switchView('home');
+    setTimeout(() => $('matchCoverage')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+  };
+
   async function init() {
     try {
       const response = await fetch('/data/fixtures.json', { cache: 'no-store' });
@@ -205,6 +264,7 @@
       }
     } catch (_) {
       $('matchCoverage')?.setAttribute('hidden', '');
+      hideNewsCoverage();
     }
   }
 

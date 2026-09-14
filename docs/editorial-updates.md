@@ -40,3 +40,4 @@ La citazione della fonte assicura trasparenza ma non sostituisce l'autorizzazion
 
 La scheda `#matchCoverage` compare soltanto da 48 ore prima fino a 4 ore dopo il calcio d'inizio. Prima della gara promuove l'appuntamento e la condivisione; durante la partita offre il player ufficiale se autorizzato, altrimenti radiocronaca di Salomone, cronaca descrittiva e accesso alla community. Dopo la finestra live scompare: cronaca e video post partita rientrano nel normale asse temporale editoriale.
 
+La stessa copertura deve comparire anche in News tramite `#newsMatchCoverage`, generata dagli stessi dati della Home e collocata in testa al feed soltanto durante la finestra attiva. Deve partecipare ai filtri «Tutto», «Squadra» e «Partita live», mantenere `.source-line`, condivisione e accesso alla copertura completa. Non duplicare il player video nella scheda News: il pulsante apre la copertura Home, così resta un solo player autorizzato e un’unica fonte dei dati.

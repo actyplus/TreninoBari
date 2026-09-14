@@ -141,6 +141,31 @@ img{display:block;max-width:100%}
 .match-coverage-source span{line-height:1.3}
 .match-coverage-card .tb-reactions [data-share]{display:none}
 .match-coverage-note{margin:9px 0 0;color:#777;font-size:9px;line-height:1.35}
+
+/* COPERTURA PARTITA NELL'ASSE TEMPORALE NEWS */
+.news-live-item{
+  border-color:#e8b2b5;
+  background:linear-gradient(150deg,#fff 0%,#fff8f8 70%,#ffeded 100%);
+  box-shadow:0 9px 24px rgba(146,11,18,.09)
+}
+.news-live-item[hidden]{display:none!important}
+.news-live-item .post-body{position:relative}
+.news-live-item .post-body:before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--red)
+}
+.news-live-status{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;
+  margin-top:10px;padding:9px 10px;border-radius:13px;background:#fff;border:1px solid #efc5c7
+}
+.news-live-status b{font-size:12px;color:var(--red-dark)}
+.news-live-status span{font-size:9px;color:var(--muted)}
+.news-match-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.news-match-actions button{
+  min-height:40px;border:1px solid #e4b2b5;border-radius:12px;padding:8px 10px;
+  background:#fff;color:var(--red-dark);font-size:10px;font-weight:950;cursor:pointer
+}
+.news-match-actions .primary{border-color:var(--red);background:var(--red);color:#fff}
+
 @media(min-width:700px){
   .match-coverage-actions{grid-template-columns:1fr 1fr 1fr}
   .match-coverage-actions .wide{grid-column:auto}
@@ -1907,11 +1932,26 @@ img{display:block;max-width:100%}
       <button class="filter active" data-filter="all" onclick="setFilter(this)">🌐 Tutto</button>
       <button class="filter" data-filter="mercato" onclick="setFilter(this)">💼 Mercato</button>
       <button class="filter" data-filter="squadra" onclick="setFilter(this)">⚽ Squadra</button>
+      <button class="filter" data-filter="live" onclick="setFilter(this)">📡 Partita live</button>
       <button class="filter" data-filter="tifosi" onclick="setFilter(this)">🗣 Tifosi</button>
       <button class="filter" data-filter="video" onclick="setFilter(this)">🎬 Video</button>
       <button class="filter" data-filter="societa" onclick="setFilter(this)">🏢 Società</button>
     </div>
     <div class="feed two-col" id="allNews">
+      <article class="post news-item featured news-live-item" id="newsMatchCoverage" data-cat="live squadra" data-runtime-active="false" hidden aria-live="polite">
+        <div class="post-body">
+          <div class="post-meta"><span class="badge analysis" id="newsMatchCoverageBadge">📡 GUIDA PREPARTITA</span><span class="post-time" id="newsMatchCoverageTime">in aggiornamento</span></div>
+          <h3 id="newsMatchCoverageTitle">Dove seguire la prossima partita del Bari</h3>
+          <p id="newsMatchCoverageText">Disponibilità video, radiocronaca, cronaca descrittiva e community saranno aggiornate dalle fonti ufficiali.</p>
+          <div class="news-live-status"><b id="newsMatchCoverageStatus">🔎 Copertura in verifica</b><span id="newsMatchCoverageKickoff">prossimo incontro</span></div>
+          <div class="news-match-actions">
+            <button class="primary" type="button" onclick="openNewsMatchCoverage()">⚽ Apri la copertura</button>
+            <button type="button" onclick="shareMatchCoverage()">↗ Invita un tifoso</button>
+          </div>
+        </div>
+        <div class="source-line"><a id="newsMatchCoverageSource" href="https://www.seriec.com/" target="_blank" rel="noopener">Lega Serie C ↗</a><span id="newsMatchCoverageSourceNote">programmazione ufficiale</span></div>
+      </article>
+
       <article class="post news-item featured" data-cat="squadra">
         <div class="post-body">
           <div class="post-meta"><span class="badge analysis">🧭 L’AVVERSARIO · VERIFICATO</span><span class="post-time">14 set · 08:00</span></div>
@@ -3209,10 +3249,11 @@ function setFilter(btn){
 function filterNews(){
   const q=(document.getElementById('newsSearch')?.value||'').toLowerCase().trim();
   document.querySelectorAll('.news-item').forEach(item=>{
-    const cat=item.dataset.cat;
-    const okCat=currentFilter==='all'||cat===currentFilter;
+    const categories=(item.dataset.cat||'').split(/\s+/).filter(Boolean);
+    const runtimeActive=item.dataset.runtimeActive!=='false';
+    const okCat=currentFilter==='all'||categories.includes(currentFilter);
     const okText=!q||item.textContent.toLowerCase().includes(q);
-    item.style.display=(okCat&&okText)?'block':'none';
+    item.style.display=(runtimeActive&&okCat&&okText)?'block':'none';
   });
 }
 
@@ -4016,7 +4057,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js" defer></script>
 <script src="/community-supabase.js?v=20260913-auth3" defer></script>
 
-<script src="/live-coverage.js?v=20260914-1" defer></script>
+<script src="/live-coverage.js?v=20260914-2" defer></script>
 <script src="/video-news.js?v=20260912-2" defer></script>
 <script src="/member.js?v=20260912" defer></script>
 <script src="/traffic.js?v=20260913-community" defer></script>
