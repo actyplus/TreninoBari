@@ -1019,6 +1019,27 @@ img{display:block;max-width:100%}
 .tb-video-actions a{font-size:14px;font-weight:850;color:var(--red)}
 .tb-video-close{border:1px solid var(--line);border-radius:10px;background:white;padding:8px 12px;cursor:pointer;font-size:14px}
 
+/* HOME: notizie, video e cronaca condividono lo stesso asse temporale */
+#view-home .feed>.timeline-media,
+#view-home .feed>.timeline-match{padding:3px 0 0}
+#view-home .timeline-date-line{align-items:center;margin:2px 2px 9px;padding-top:5px;border-top:1px solid var(--line)}
+#view-home .timeline-date-line h2{font-size:19px}
+#view-home .timeline-media .section-note{margin-bottom:9px}
+#view-home .timeline-media .tb-video-list{
+  display:grid;grid-auto-flow:column;grid-auto-columns:minmax(300px,86%);
+  gap:10px;overflow-x:auto;padding:0 2px 8px;scroll-snap-type:x mandatory;
+  overscroll-behavior-inline:contain;scrollbar-width:thin
+}
+#view-home .timeline-media .tb-video-card{scroll-snap-align:start}
+#view-home .timeline-media .tb-video-screen,
+#view-home .timeline-media .tb-video-screen iframe,
+#view-home .timeline-media .tb-video-play{min-height:170px}
+#view-home .timeline-media .tb-video-info h3{font-size:19px}
+#view-home .timeline-media .tb-video-info p{font-size:13px}
+@media(min-width:700px){
+  #view-home .timeline-media .tb-video-list{grid-auto-columns:minmax(340px,62%)}
+}
+
 </style>
 <link rel="stylesheet" href="/member.css?v=20260912-members">
 <link rel="stylesheet" href="/assets/matches.css?v=20260912-2">
@@ -1055,105 +1076,10 @@ img{display:block;max-width:100%}
     <div class="snap"><b>📅 15/09</b><span>Bari-Potenza · 21:00</span></div>
   </div>
 
-  <section class="live-match" id="liveMatch" hidden aria-live="polite" aria-label="Diretta della partita del Bari">
-    <div class="live-card">
-      <div class="live-top">
-        <span class="live-kicker" id="liveKicker"><span class="live-dot" aria-hidden="true"></span> DIRETTA PARTITA</span>
-        <span class="live-status" id="liveStatus">In corso</span>
-      </div>
-      <div class="live-score">
-        <span class="live-team" id="liveHome">—</span>
-        <strong class="live-result" id="liveScore">—</strong>
-        <span class="live-team" id="liveAway">Bari</span>
-      </div>
-      <div class="live-feed">
-        <div class="live-feed-head"><b id="liveFeedTitle">Azioni salienti</b><span class="live-updated" id="liveUpdated">Aggiornamento automatico</span></div>
-        <div class="live-radio" aria-label="Radiocronaca del Bari su Radio Norba Music">
-          <div class="live-radio-head">
-            <span class="live-radio-title">🎙️ Voce al Bari · Michele Salomone</span>
-            <span class="live-radio-sub">Radio Norba Music<br>Avvia con un tocco</span>
-          </div>
-          <video class="live-radio-media" id="liveRadio" preload="none" playsinline></video>
-          <button class="live-radio-play" id="liveRadioButton" type="button" aria-pressed="false" onclick="toggleLiveRadio()">
-            <span class="live-radio-play-icon" id="liveRadioIcon" aria-hidden="true">▶</span>
-            <span id="liveRadioLabel">Ascolta Salomone</span>
-          </button>
-          <div class="live-radio-links">
-            <span id="liveRadioStatus" role="status">Tocca per avviare la radiocronaca</span>
-            <a href="https://play.radionorba.it/#channel=radio-norba-music" target="_blank" rel="noopener">Lettore ufficiale ↗</a>
-          </div>
-        </div>
-        <div class="live-events" id="liveEvents"></div>
-        <div class="live-tools">
-          <a id="liveSource" href="https://www.corrieredellosport.it/live" target="_blank" rel="noopener">Fonte live ↗</a>
-        </div>
-      </div>
-    </div>
-  </section>
 
 
-  <!-- TB_VIDEOS_START: prepend verified cards here; deduplicate by data-video-id. -->
-  <section class="section" id="bari-videos" aria-labelledby="bari-videos-title">
-    <div class="section-head"><h2 id="bari-videos-title">🎬 Video del Bari</h2><small>Highlights e post partita</small></div>
-    <p class="section-note">Le immagini della partita e le voci dei protagonisti. Tocca ▶ per guardare qui: il lettore YouTube si carica solo quando lo scegli.</p>
-    <div class="tb-video-list">
-      <article class="tb-video-card" data-video-id="wvCFvBkNrfY" data-match-date="2026-09-11">
-        <div class="tb-video-screen"><button class="tb-video-play" type="button" aria-label="Guarda gli highlights Lega Pro di Altamura-Bari"><span aria-hidden="true">▶</span>Guarda il video</button></div>
-        <div class="tb-video-info">
-          <span class="badge official">🏆 VIDEO · LEGA PRO / SERIE C</span>
-          <h3>Altamura–Bari 0-3: gli highlights ufficiali di Lega Pro</h3>
-          <p>🎬 Il montaggio esteso della quarta giornata pubblicato dal canale Serie C. Durata 4:32 · pubblicato l’<time datetime="2026-09-11">11 settembre 2026</time>.</p>
-          <div class="tb-video-actions"><a href="https://www.youtube.com/watch?v=wvCFvBkNrfY" target="_blank" rel="noopener">Guarda su YouTube ↗</a><button class="tb-video-close" type="button" hidden>Chiudi video</button></div>
-          <p>Se YouTube limita la riproduzione qui, usa “Guarda su YouTube”.</p>
-        </div>
-      </article>
-      <article class="tb-video-card" data-video-id="6tRXhP4na6c" data-match-date="2026-09-11">
-        <div class="tb-video-screen"><button class="tb-video-play" type="button" aria-label="Guarda Cerofolini nel post partita di Altamura-Bari"><span aria-hidden="true">▶</span>Guarda il video</button></div>
-        <div class="tb-video-info">
-          <span class="badge official">🐓 VIDEO · SSC BARI</span>
-          <h3>Altamura-Bari | Michele Cerofolini nel post gara</h3>
-          <p>🎙️ L’intervista ufficiale al portiere dopo il derby dell’11 settembre. Canale SSC Bari · pubblicato il <time datetime="2026-09-12T00:21:54+02:00">12 settembre 2026</time>.</p>
-          <div class="tb-video-actions"><a href="https://www.youtube.com/watch?v=6tRXhP4na6c" target="_blank" rel="noopener">Guarda su YouTube ↗</a><button class="tb-video-close" type="button" hidden>Chiudi video</button></div>
-          <p>Se YouTube limita la riproduzione qui, usa “Guarda su YouTube”.</p>
-        </div>
-      </article>
-      <article class="tb-video-card" data-video-id="VkN95HiXseg" data-match-date="2026-09-11">
-        <div class="tb-video-screen"><button class="tb-video-play" type="button" aria-label="Guarda gli highlights SSC Bari"><span aria-hidden="true">▶</span>Guarda il video</button></div>
-        <div class="tb-video-info">
-          <span class="badge official">🐓 VIDEO · SSC BARI</span>
-          <h3>Altamura–Bari 0-3: i gol e gli highlights</h3><p>Maggiore, Darboe e Butić nel video pubblicato da SSC Bari dopo la partita dell’11 settembre 2026.</p>
-          <div class="tb-video-actions"><a href="https://www.youtube.com/watch?v=VkN95HiXseg" target="_blank" rel="noopener">Guarda su YouTube ↗</a><button class="tb-video-close" type="button" hidden>Chiudi video</button></div>
-          <p>Se YouTube limita la riproduzione qui, usa “Guarda su YouTube”.</p>
-        </div>
-      </article>
 
-      <article class="tb-video-card" data-video-id="L-29gxSGfgI" data-match-date="2026-09-11">
-        <div class="tb-video-screen"><button class="tb-video-play" type="button" aria-label="Guarda Rastelli nel post partita"><span aria-hidden="true">▶</span>Guarda il video</button></div>
-        <div class="tb-video-info">
-          <span class="badge official">🐓 VIDEO · SSC BARI</span>
-          <h3>Rastelli: il video del post partita</h3><p>La conferenza di Massimo Rastelli dopo Altamura–Bari, pubblicata dal canale SSC Bari.</p>
-          <div class="tb-video-actions"><a href="https://www.youtube.com/watch?v=L-29gxSGfgI" target="_blank" rel="noopener">Guarda su YouTube ↗</a><button class="tb-video-close" type="button" hidden>Chiudi video</button></div>
-          <p>Se YouTube limita la riproduzione qui, usa “Guarda su YouTube”.</p>
-        </div>
-      </article>
-      <article class="tb-video-card" data-video-id="IZrbyNzZx3k" data-match-date="2026-09-11">
-        <div class="tb-video-screen">
-          <button class="tb-video-play" type="button" aria-label="Guarda Altamura–Bari 0-3"><span aria-hidden="true">▶</span>Guarda il video</button>
-        </div>
-        <div class="tb-video-info">
-          <span class="badge analysis">📺 SERVIZIO TV · ANTENNA SUD</span>
-          <h3>Altamura–Bari 0-3: il servizio della partita</h3>
-          <p>Il video di Antenna Sud – canale 14 dedicato al derby dell’11 settembre 2026.</p>
-          <div class="tb-video-actions">
-            <a href="https://www.youtube.com/watch?v=IZrbyNzZx3k" target="_blank" rel="noopener">Guarda su YouTube ↗</a>
-            <button class="tb-video-close" type="button" hidden>Chiudi video</button>
-          </div>
-          <p>Se YouTube limita la riproduzione qui, usa “Guarda su YouTube”.</p>
-        </div>
-      </article>
-    </div>
-  </section>
-  <!-- TB_VIDEOS_END -->
+
 
   <div class="section">
     <div class="section-head">
@@ -1221,6 +1147,106 @@ img{display:block;max-width:100%}
         <div class="source-line"><a href="https://www.sscalciobari.it/it/news/7362-pianeta-galletti-la-primavera-batte-lascoli-e-vola-a-punteggio-pieno/" target="_blank" rel="noopener">🐓 Referto ufficiale SSC Bari ↗</a><span>12 settembre · Primavera 2</span></div>
         <div class="post-actions"><button onclick="like(this)">🤍 Segui</button><button onclick="shareArticle('Primavera 2: Bari-Ascoli 2-1 nel recupero')">↗ Condividi</button></div>
       </article>
+
+  <!-- TB_VIDEOS_START: prepend verified cards here; deduplicate by data-video-id. -->
+  <section class="section timeline-media" id="bari-videos" data-timeline-date="2026-09-12" aria-labelledby="bari-videos-title">
+    <div class="section-head timeline-date-line"><h2 id="bari-videos-title">🎬 12 settembre · Video e interviste</h2><small>Altamura–Bari</small></div>
+    <p class="section-note">Highlights e voci del post partita, inseriti nello stesso ordine temporale delle notizie. Scorri lateralmente e tocca ▶: YouTube si carica solo quando lo scegli.</p>
+    <div class="tb-video-list">
+      <article class="tb-video-card" data-video-id="wvCFvBkNrfY" data-match-date="2026-09-11">
+        <div class="tb-video-screen"><button class="tb-video-play" type="button" aria-label="Guarda gli highlights Lega Pro di Altamura-Bari"><span aria-hidden="true">▶</span>Guarda il video</button></div>
+        <div class="tb-video-info">
+          <span class="badge official">🏆 VIDEO · LEGA PRO / SERIE C</span>
+          <h3>Altamura–Bari 0-3: gli highlights ufficiali di Lega Pro</h3>
+          <p>🎬 Il montaggio esteso della quarta giornata pubblicato dal canale Serie C. Durata 4:32 · pubblicato l’<time datetime="2026-09-11">11 settembre 2026</time>.</p>
+          <div class="tb-video-actions"><a href="https://www.youtube.com/watch?v=wvCFvBkNrfY" target="_blank" rel="noopener">Guarda su YouTube ↗</a><button class="tb-video-close" type="button" hidden>Chiudi video</button></div>
+          <p>Se YouTube limita la riproduzione qui, usa “Guarda su YouTube”.</p>
+        </div>
+      </article>
+      <article class="tb-video-card" data-video-id="6tRXhP4na6c" data-match-date="2026-09-11">
+        <div class="tb-video-screen"><button class="tb-video-play" type="button" aria-label="Guarda Cerofolini nel post partita di Altamura-Bari"><span aria-hidden="true">▶</span>Guarda il video</button></div>
+        <div class="tb-video-info">
+          <span class="badge official">🐓 VIDEO · SSC BARI</span>
+          <h3>Altamura-Bari | Michele Cerofolini nel post gara</h3>
+          <p>🎙️ L’intervista ufficiale al portiere dopo il derby dell’11 settembre. Canale SSC Bari · pubblicato il <time datetime="2026-09-12T00:21:54+02:00">12 settembre 2026</time>.</p>
+          <div class="tb-video-actions"><a href="https://www.youtube.com/watch?v=6tRXhP4na6c" target="_blank" rel="noopener">Guarda su YouTube ↗</a><button class="tb-video-close" type="button" hidden>Chiudi video</button></div>
+          <p>Se YouTube limita la riproduzione qui, usa “Guarda su YouTube”.</p>
+        </div>
+      </article>
+      <article class="tb-video-card" data-video-id="VkN95HiXseg" data-match-date="2026-09-11">
+        <div class="tb-video-screen"><button class="tb-video-play" type="button" aria-label="Guarda gli highlights SSC Bari"><span aria-hidden="true">▶</span>Guarda il video</button></div>
+        <div class="tb-video-info">
+          <span class="badge official">🐓 VIDEO · SSC BARI</span>
+          <h3>Altamura–Bari 0-3: i gol e gli highlights</h3><p>Maggiore, Darboe e Butić nel video pubblicato da SSC Bari dopo la partita dell’11 settembre 2026.</p>
+          <div class="tb-video-actions"><a href="https://www.youtube.com/watch?v=VkN95HiXseg" target="_blank" rel="noopener">Guarda su YouTube ↗</a><button class="tb-video-close" type="button" hidden>Chiudi video</button></div>
+          <p>Se YouTube limita la riproduzione qui, usa “Guarda su YouTube”.</p>
+        </div>
+      </article>
+
+      <article class="tb-video-card" data-video-id="L-29gxSGfgI" data-match-date="2026-09-11">
+        <div class="tb-video-screen"><button class="tb-video-play" type="button" aria-label="Guarda Rastelli nel post partita"><span aria-hidden="true">▶</span>Guarda il video</button></div>
+        <div class="tb-video-info">
+          <span class="badge official">🐓 VIDEO · SSC BARI</span>
+          <h3>Rastelli: il video del post partita</h3><p>La conferenza di Massimo Rastelli dopo Altamura–Bari, pubblicata dal canale SSC Bari.</p>
+          <div class="tb-video-actions"><a href="https://www.youtube.com/watch?v=L-29gxSGfgI" target="_blank" rel="noopener">Guarda su YouTube ↗</a><button class="tb-video-close" type="button" hidden>Chiudi video</button></div>
+          <p>Se YouTube limita la riproduzione qui, usa “Guarda su YouTube”.</p>
+        </div>
+      </article>
+      <article class="tb-video-card" data-video-id="IZrbyNzZx3k" data-match-date="2026-09-11">
+        <div class="tb-video-screen">
+          <button class="tb-video-play" type="button" aria-label="Guarda Altamura–Bari 0-3"><span aria-hidden="true">▶</span>Guarda il video</button>
+        </div>
+        <div class="tb-video-info">
+          <span class="badge analysis">📺 SERVIZIO TV · ANTENNA SUD</span>
+          <h3>Altamura–Bari 0-3: il servizio della partita</h3>
+          <p>Il video di Antenna Sud – canale 14 dedicato al derby dell’11 settembre 2026.</p>
+          <div class="tb-video-actions">
+            <a href="https://www.youtube.com/watch?v=IZrbyNzZx3k" target="_blank" rel="noopener">Guarda su YouTube ↗</a>
+            <button class="tb-video-close" type="button" hidden>Chiudi video</button>
+          </div>
+          <p>Se YouTube limita la riproduzione qui, usa “Guarda su YouTube”.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+  <!-- TB_VIDEOS_END -->
+
+  <section class="live-match timeline-match" id="liveMatch" data-timeline-kind="match" hidden aria-live="polite" aria-label="Diretta della partita del Bari">
+    <div class="section-head timeline-date-line"><h2 id="liveTimelineTitle">⚽ Ultima partita · cronaca completa</h2><small id="liveTimelineDate">11 settembre</small></div>
+    <div class="live-card">
+      <div class="live-top">
+        <span class="live-kicker" id="liveKicker"><span class="live-dot" aria-hidden="true"></span> DIRETTA PARTITA</span>
+        <span class="live-status" id="liveStatus">In corso</span>
+      </div>
+      <div class="live-score">
+        <span class="live-team" id="liveHome">—</span>
+        <strong class="live-result" id="liveScore">—</strong>
+        <span class="live-team" id="liveAway">Bari</span>
+      </div>
+      <div class="live-feed">
+        <div class="live-feed-head"><b id="liveFeedTitle">Azioni salienti</b><span class="live-updated" id="liveUpdated">Aggiornamento automatico</span></div>
+        <div class="live-radio" aria-label="Radiocronaca del Bari su Radio Norba Music">
+          <div class="live-radio-head">
+            <span class="live-radio-title">🎙️ Voce al Bari · Michele Salomone</span>
+            <span class="live-radio-sub">Radio Norba Music<br>Avvia con un tocco</span>
+          </div>
+          <video class="live-radio-media" id="liveRadio" preload="none" playsinline></video>
+          <button class="live-radio-play" id="liveRadioButton" type="button" aria-pressed="false" onclick="toggleLiveRadio()">
+            <span class="live-radio-play-icon" id="liveRadioIcon" aria-hidden="true">▶</span>
+            <span id="liveRadioLabel">Ascolta Salomone</span>
+          </button>
+          <div class="live-radio-links">
+            <span id="liveRadioStatus" role="status">Tocca per avviare la radiocronaca</span>
+            <a href="https://play.radionorba.it/#channel=radio-norba-music" target="_blank" rel="noopener">Lettore ufficiale ↗</a>
+          </div>
+        </div>
+        <div class="live-events" id="liveEvents"></div>
+        <div class="live-tools">
+          <a id="liveSource" href="https://www.corrieredellosport.it/live" target="_blank" rel="noopener">Fonte live ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
       <article class="post">
         <div class="post-body">
@@ -2952,6 +2978,14 @@ function renderLiveMatch(){
   const feedTitle=document.getElementById('liveFeedTitle');
   if(kicker)kicker.lastChild.textContent=isFinished?' PARTITA TERMINATA':' DIRETTA PARTITA';
   if(feedTitle)feedTitle.textContent=isFinished?'Cronaca completa':'Azioni salienti';
+  const timelineTitle=document.getElementById('liveTimelineTitle');
+  const timelineDate=document.getElementById('liveTimelineDate');
+  if(timelineTitle)timelineTitle.textContent=isFinished?`⚽ ${liveMatchData.home||'Bari'}–${liveMatchData.away||'avversario'} · cronaca completa`:`🔴 ${liveMatchData.home||'Bari'}–${liveMatchData.away||'avversario'} · in diretta`;
+  if(timelineDate){
+    const rawDate=String(liveMatchData.matchDate||'').slice(0,10);
+    const parsedDate=rawDate?new Date(rawDate+'T12:00:00'):null;
+    timelineDate.textContent=parsedDate&&!Number.isNaN(parsedDate.getTime())?parsedDate.toLocaleDateString('it-IT',{day:'numeric',month:'long'}):'ultima partita';
+  }
   document.getElementById('liveHome').textContent=liveMatchData.home||'—';
   document.getElementById('liveAway').textContent=liveMatchData.away||'Bari';
   document.getElementById('liveScore').textContent=liveMatchData.score||'—';
