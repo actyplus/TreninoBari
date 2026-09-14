@@ -1,20 +1,20 @@
 {
-  "verifiedAt": "2026-09-14T09:20:00+02:00",
+  "verifiedAt": "2026-09-14T18:57:00+02:00",
   "fixtures": [
     {
       "id": "2026-09-15-bari-potenza",
       "home": "Bari",
       "away": "Potenza",
       "kickoff": "2026-09-15T21:00:00+02:00",
-      "source": "https://www.sscalciobari.it/it/news/7356-allenamenti-domani-la-ripresa-dei-lavori/",
+      "source": "https://www.sscalciobari.it/it/news/7353-bari-potenza-le-info-utili/",
       "competition": "Serie C",
       "coverage": {
-        "access": "paid",
-        "provider": "Sky Sport e NOW",
-        "source": "https://www.seriec.com/",
-        "sourceName": "Lega Serie C",
-        "confirmedAt": "2026-09-14T09:20:00+02:00",
-        "note": "Nessuna diretta video gratuita ufficiale annunciata."
+        "access": "free-link",
+        "provider": "Antenna Sud · canale 14",
+        "source": "https://www.antennasud.com/partite-in-diretta/",
+        "sourceName": "Antenna Sud",
+        "confirmedAt": "2026-09-14T18:57:00+02:00",
+        "note": "Diretta gratuita in TV sul canale 14 del digitale terrestre in Puglia e Basilicata; nessuno streaming ufficiale annunciato."
       }
     },
     {
@@ -22,7 +22,15 @@
       "home": "Sorrento",
       "away": "Bari",
       "kickoff": "2026-09-19T14:30:00+02:00",
-      "source": "https://www.sscalciobari.it/it/schedule/1/"
+      "source": "https://www.sscalciobari.it/it/schedule/1/",
+      "coverage": {
+        "access": "free-link",
+        "provider": "Antenna Sud · canale 14",
+        "source": "https://www.antennasud.com/partite-in-diretta/",
+        "sourceName": "Antenna Sud",
+        "confirmedAt": "2026-09-14T18:57:00+02:00",
+        "note": "Diretta gratuita in TV sul canale 14 del digitale terrestre in Puglia e Basilicata; nessuno streaming ufficiale annunciato."
+      }
     },
     {
       "id": "2026-09-26-bari-cosenza",

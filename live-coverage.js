@@ -100,7 +100,9 @@
       providerIcon.textContent = '📺';
       providerStatus.textContent = 'GRATIS';
       providerStatus.classList.add('free');
-      providerDetail.textContent = 'La diretta si apre sul sito dell’emittente.';
+      providerDetail.textContent = coverage.note || (coverage.watchUrl
+        ? 'La diretta si apre sul sito dell’emittente.'
+        : 'Diretta gratuita disponibile sul canale TV indicato.');
     } else if (access === 'paid') {
       providerIcon.textContent = '🔒';
       providerStatus.textContent = 'ABBONAMENTO';
