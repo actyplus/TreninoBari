@@ -16,9 +16,14 @@ const combined=scripts.join('\n')+'\n'+fs.readFileSync('community-supabase.js','
 w.eval(combined);
 setTimeout(async()=>{
 try{
-  assert.equal(w.document.querySelectorAll('#allNews .tb-video-card').length,3);
+  const expectedVideos=w.document.querySelectorAll('#bari-videos .tb-video-card').length;
+  assert.equal(w.document.querySelectorAll('#allNews .tb-video-card').length,expectedVideos);
+  const timelineKeys=[...w.document.querySelectorAll('#allNews > .news-item')]
+    .filter(x=>x.id!=='newsMatchCoverage')
+    .map(x=>Number(x.dataset.timelineKey));
+  assert.ok(timelineKeys.every((key,index)=>index===0||timelineKeys[index-1]>=key));
   w.document.querySelector('[data-filter=video]').click();
-  assert.equal([...w.document.querySelectorAll('#allNews .news-item')].filter(x=>x.style.display!=='none').length,3);
+  assert.equal([...w.document.querySelectorAll('#allNews .news-item')].filter(x=>x.style.display!=='none').length,expectedVideos);
   w.document.getElementById('newsSearch').value='Rastelli';w.filterNews();
   assert.equal([...w.document.querySelectorAll('#allNews .news-item')].filter(x=>x.style.display!=='none').length,1);
   w.switchView('news');
@@ -35,5 +40,5 @@ try{
   assert.equal(w.document.querySelectorAll('#bari-videos').length,1);
   console.log('PASS: video copies/filter/search/player teardown, profile, news controls and Google UI');
 }catch(error){console.error(error);process.exitCode=1;}
-finally{w.close();}
+finally{await new Promise(resolve=>setTimeout(resolve,250));w.close();}
 },200);

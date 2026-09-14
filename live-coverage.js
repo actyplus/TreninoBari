@@ -149,6 +149,7 @@
 
     card.hidden = false;
     card.dataset.runtimeActive = 'true';
+    card.dataset.publishedAt = new Date(now).toISOString();
     card.style.removeProperty('display');
     $('newsMatchCoverageBadge').className = 'badge ' + (isLive ? 'official' : 'analysis');
     $('newsMatchCoverageBadge').textContent = isLive ? '🔴 PARTITA IN CORSO' : '📡 GUIDA PREPARTITA';
@@ -172,6 +173,7 @@
     sourceLink.textContent = (coverage.sourceName || 'Fonte ufficiale') + ' ↗';
     $('newsMatchCoverageSourceNote').textContent = formatConfirmed(coverage.confirmedAt);
 
+    if (typeof window.sortNewsChronologically === 'function') window.sortNewsChronologically();
     if (typeof window.filterNews === 'function') window.filterNews();
   }
 

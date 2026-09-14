@@ -10,6 +10,8 @@ Si possono formulare testi originali dai dati: risultato, marcatori confermati, 
 
 Video: aggiornare solo #bari-videos tra TB_VIDEOS_START/END, massimo 6 schede pertinenti. News li ricava da video-news.js. Verificare titolo/canale/data/ID e preservare le classi del player.
 
+Asse temporale News: ogni nuova scheda deve avere una `.post-time` leggibile e, quando è disponibile l'orario esatto, `data-published-at` in formato ISO. `video-news.js` ordina automaticamente notizie, video e copertura partita dal contenuto più recente al più vecchio; i filtri non devono cambiare questo ordine. I video senza orario preciso usano la fine della giornata associata e mantengono tra loro l'ordine editoriale dell'archivio canonico.
+
 member.js aggiunge interazioni: preservare .source-line e il link canonico. Non scrivere contatori/XP e non modificare file account o migrazioni durante aggiornamenti editoriali. Conservare Home come vista iniziale.
 
 Prima del commit rileggere main per integrare modifiche concorrenti, controllare coerenza numerica e temporale; dopo il commit verificare HTML, titolo e contenuti online. Nessuna notifica senza novità.
