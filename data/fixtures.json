@@ -1,12 +1,21 @@
 {
-  "verifiedAt": "2026-09-12T10:46:00+02:00",
+  "verifiedAt": "2026-09-14T09:20:00+02:00",
   "fixtures": [
     {
       "id": "2026-09-15-bari-potenza",
       "home": "Bari",
       "away": "Potenza",
       "kickoff": "2026-09-15T21:00:00+02:00",
-      "source": "https://www.sscalciobari.it/it/news/7356-allenamenti-domani-la-ripresa-dei-lavori/"
+      "source": "https://www.sscalciobari.it/it/news/7356-allenamenti-domani-la-ripresa-dei-lavori/",
+      "competition": "Serie C",
+      "coverage": {
+        "access": "paid",
+        "provider": "Sky Sport e NOW",
+        "source": "https://www.seriec.com/",
+        "sourceName": "Lega Serie C",
+        "confirmedAt": "2026-09-14T09:20:00+02:00",
+        "note": "Nessuna diretta video gratuita ufficiale annunciata."
+      }
     },
     {
       "id": "2026-09-19-sorrento-bari",

@@ -29,3 +29,14 @@ assets/matches.js costruisce la vista interattiva dai dati editoriali esistenti 
 ## Video nelle partite giocate
 
 Alle schede video canoniche in #bari-videos aggiungere data-match-date="YYYY-MM-DD" con la data verificata della partita raccontata (non la data di pubblicazione del video). Omettere l'attributo per video senza una partita precisa. assets/matches.js mostra automaticamente i video associati nei dettagli delle gare con risultato verificato, con indicatore 🎬 in calendario e in elenco. Non duplicare schede manualmente nel calendario o nelle News. Il player condiviso gestisce anche le schede generate e si chiude cambiando partita o sezione. Quando una scheda viene rimossa dall'archivio Home, non sarà più proposta neppure nei dettagli della partita.
+
+## Copertura prepartita e dirette lecite
+
+Nelle 48 ore precedenti ogni gara verificare anche dove sarà trasmessa, dando priorità a Lega Serie C, SSC Bari, Rai/RaiPlay e ai canali ufficiali delle emittenti. Aggiornare l'oggetto opzionale `coverage` della partita in `data/fixtures.json` con `access`, `provider`, `source`, `sourceName`, `confirmedAt` e, solo se pertinenti, `watchUrl` o `embedUrl`.
+
+Valori ammessi per `access`: `free-embed` per un player ufficiale che consente espressamente l'incorporamento, `free-link` per una diretta gratuita apribile soltanto sul sito originale, `paid` per servizi in abbonamento, `none` quando è confermata l'assenza di video e `checking` se la programmazione non è ancora verificata. Non presentare come gratuita una gara soltanto perché una pagina o un flusso è raggiungibile.
+
+La citazione della fonte assicura trasparenza ma non sostituisce l'autorizzazione. Non estrarre o ripubblicare flussi, playlist M3U8, token, contenuti protetti o player modificati; non nascondere loghi, controlli, pubblicità o attribuzioni dell'emittente. Il sito incorpora esclusivamente URL HTTPS dei player YouTube ufficiali ammessi dal codice; per RaiPlay o altre piattaforme non incorporabili usa il collegamento alla pagina originale.
+
+La scheda `#matchCoverage` compare soltanto da 48 ore prima fino a 4 ore dopo il calcio d'inizio. Prima della gara promuove l'appuntamento e la condivisione; durante la partita offre il player ufficiale se autorizzato, altrimenti radiocronaca di Salomone, cronaca descrittiva e accesso alla community. Dopo la finestra live scompare: cronaca e video post partita rientrano nel normale asse temporale editoriale.
+
