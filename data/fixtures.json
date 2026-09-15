@@ -2,27 +2,6 @@
   "verifiedAt": "2026-09-15T23:00:00+02:00",
   "fixtures": [
     {
-      "id": "2026-09-15-bari-potenza",
-      "home": "Bari",
-      "away": "Potenza",
-      "kickoff": "2026-09-15T21:00:00+02:00",
-      "source": "https://www.sscalciobari.it/it/news/7364-seriec-sky-wifi-5a-g-gir-c-bari-potenza-0-0-30-40st/",
-      "competition": "Serie C",
-      "livePath": "/live/partita/bari-potenza-2675608",
-      "coverage": {
-        "access": "free-tv",
-        "provider": "Antenna Sud · canale 14",
-        "source": "https://www.antennasud.com/partite-in-diretta/",
-        "sourceName": "Antenna Sud · palinsesto ufficiale",
-        "confirmedAt": "2026-09-15T22:08:39+02:00",
-        "note": "Bari–Potenza è stata trasmessa sul digitale terrestre in Puglia e Basilicata. Il palinsesto ufficiale non offriva lo streaming web della gara; su TB non è stato attivato un embedding non verificato.",
-        "paid": [
-          {"name":"NOW","url":"https://www.nowtv.it/sport/calcio/serie-c"},
-          {"name":"Sky Go","url":"https://skygo.sky.it/"}
-        ]
-      }
-    },
-    {
       "id": "2026-09-19-sorrento-bari",
       "home": "Sorrento",
       "away": "Bari",
@@ -37,7 +16,12 @@
         "sourceName": "Antenna Sud",
         "confirmedAt": "2026-09-14T18:57:00+02:00",
         "note": "Diretta gratuita in TV sul canale 14 del digitale terrestre in Puglia e Basilicata; nessuno streaming ufficiale annunciato.",
-        "paid": [{"name":"NOW","url":"https://www.nowtv.it/sport/calcio/serie-c"}]
+        "paid": [
+          {
+            "name": "NOW",
+            "url": "https://www.nowtv.it/sport/calcio/serie-c"
+          }
+        ]
       }
     },
     {
@@ -48,7 +32,14 @@
       "source": "https://www.sscalciobari.it/it/schedule/1/",
       "competition": "Serie C",
       "livePath": "/live/partita/bari-cosenza-2675628",
-      "coverage": {"paid":[{"name":"NOW","url":"https://www.nowtv.it/sport/calcio/serie-c"}]}
+      "coverage": {
+        "paid": [
+          {
+            "name": "NOW",
+            "url": "https://www.nowtv.it/sport/calcio/serie-c"
+          }
+        ]
+      }
     },
     {
       "id": "2026-10-04-salernitana-bari",
@@ -58,7 +49,14 @@
       "source": "https://www.sscalciobari.it/it/schedule/1/",
       "competition": "Serie C",
       "livePath": "/live/partita/salernitana-bari-2675646",
-      "coverage": {"paid":[{"name":"NOW","url":"https://www.nowtv.it/sport/calcio/serie-c"}]}
+      "coverage": {
+        "paid": [
+          {
+            "name": "NOW",
+            "url": "https://www.nowtv.it/sport/calcio/serie-c"
+          }
+        ]
+      }
     }
   ]
 }
