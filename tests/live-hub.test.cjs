@@ -1,0 +1,16 @@
+const assert = require('node:assert/strict');
+const live = require('../api/live.js');
+const f = {id:'2026-09-15-bari-potenza',home:'Bari',away:'Potenza',kickoff:'2026-09-15T21:00:00+02:00'};
+const now = Date.parse('2026-09-15T19:45:00Z');
+const payload={matchresults:{fixtures:{home_name:'Bari',away_name:'Potenza',date:{dateUTC:'2026-09-15T19:00:00Z'}},live:{score_home:0,score_away:0,MatchInfo:{Period:'FirstHalf',MatchTime:42}}},commentary:{commentary:{elements:[{elements:[{attributes:{id:'1',time:"40'",type:'corner',comment:'Corner, Bari.'}},{attributes:{id:'2',time:"42'",type:'yellow card',comment:'Nome (Potenza) è stato ammonito.'}}]}]}},lastUpdate:'2026-09-15T19:44:50Z'};
+let m = live._parseMatchData(payload,'https://www.corrieredellosport.it/live/partita/bari-potenza-2675608');
+assert(live._matchesFixture(m,f));assert.equal(m.live,true);assert.equal(m.finished,false);assert.equal(m.score,'0 - 0');assert.equal(m.events[0].minute,"42'");
+assert.equal(live._matchesFixture({...m,away:'Casarano'},f),false);
+assert.equal(live._matchesFixture({...m,matchDate:'2026-09-01T19:00:00Z'},f),false);
+assert.equal(live._isRecentFinal({...m,finished:true,matchDate:'2026-09-01T19:00:00Z',updatedAt:new Date(now).toISOString()},now),false);
+assert.equal(live._selectFixture(now).id,f.id);
+assert.equal(live._selectFixture(Date.parse('2026-09-19T12:00:00Z')).id,'2026-09-19-sorrento-bari');
+payload.matchresults.live.MatchInfo.Period='PreMatch';delete payload.matchresults.live.score_home;m=live._parseMatchData(payload,'');assert.equal(m.live,false);assert.equal(m.score,null);
+payload.matchresults.live.MatchInfo.Period='FullTime';m=live._parseMatchData(payload,'');assert.equal(m.finished,true);
+assert.deepEqual(live._findMatchPaths('<a href="/live/partita/bari-potenza-2675608">x</a><a href="/live/partita/roma-milan-2">z</a>'),['/live/partita/bari-potenza-2675608']);
+console.log('PASS: match identity, phase, chronology, null scores, stale finals and source discovery.');

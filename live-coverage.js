@@ -1,276 +1,145 @@
+/* TB live hub 20260915.2. Only the match box is changed; news, login and video carousels stay intact. */
 (() => {
   'use strict';
-
-  const $ = id => document.getElementById(id);
-  const state = { fixture: null, timer: null };
-  const WINDOW_BEFORE = 48 * 60 * 60 * 1000;
-  const WINDOW_AFTER = 4 * 60 * 60 * 1000;
-  const ALLOWED_EMBEDS = new Set(['www.youtube.com', 'youtube.com', 'www.youtube-nocookie.com', 'youtube-nocookie.com']);
-
-  function safeHttps(value) {
-    try {
-      const url = new URL(value);
-      return url.protocol === 'https:' ? url : null;
-    } catch (_) {
-      return null;
-    }
+  const $=id=>document.getElementById(id), HOUR=3600000;
+  const state={fixtures:[],fixture:null,data:null,busy:false,calendarAt:0,tab:'text',started:false,radioPending:false,eventsKey:'',providerKey:'',newsKey:''};
+  let radioTimeout,calendarBusy=false;
+  const safe=value=>{try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password?u.href:'';}catch{return '';}};
+  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const norm=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\b(ssc|calcio|fc)\b/g,'').replace(/[^a-z0-9]/g,'');
+  const format=value=>new Intl.DateTimeFormat('it-IT',{timeZone:'Europe/Rome',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}).format(new Date(value));
+  const clock=value=>Number.isFinite(Date.parse(value))?new Intl.DateTimeFormat('it-IT',{timeZone:'Europe/Rome',hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(new Date(value)):'—';
+  function select(){const now=Date.now();return state.fixtures.filter(f=>Number.isFinite(Date.parse(f.kickoff))&&now>=Date.parse(f.kickoff)-48*HOUR&&now<=Date.parse(f.kickoff)+18*HOUR).sort((a,b)=>Date.parse(a.kickoff)-Date.parse(b.kickoff))[0]||null;}
+  function valid(data){const f=state.fixture;if(!f||!data)return false;return norm(data.home)===norm(f.home)&&norm(data.away)===norm(f.away)&&Number.isFinite(Date.parse(data.matchDate||data.kickoff))&&Math.abs(Date.parse(data.matchDate||data.kickoff)-Date.parse(f.kickoff))<6*HOUR;}
+  function currentPhase(){if(state.data?.finished)return 'finished';if(state.data?.live)return 'live';if(!state.fixture)return 'idle';return Date.now()<Date.parse(state.fixture.kickoff)?'pre':'waiting';}
+  function build(){
+    const shell=$('matchCoverage');if(!shell)return false;
+    const style=document.createElement('style');style.id='tb-live-hub-css';style.textContent=`
+#matchCoverage{scroll-margin-top:75px}#matchCoverage [hidden]{display:none!important}
+#matchCoverage .tb-live-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}
+#matchCoverage .tb-live-tabs button{min-height:60px;border:1px solid #e5b5b7;background:#fff;color:#85101a;border-radius:14px;padding:9px 4px;font-size:15px;font-weight:900;cursor:pointer}
+#matchCoverage .tb-live-tabs button[aria-selected=true]{background:#c9141c;color:#fff;border-color:#c9141c}
+#matchCoverage .tb-live-tabs span{display:block;font-size:21px;margin-bottom:3px}
+#matchCoverage .tb-hub-panel{background:#fafafa;border:1px solid #e8e8ea;border-radius:16px;padding:12px;color:#26262b}
+#matchCoverage .tb-hub-panel h4{font-size:18px;margin:0 0 8px}#matchCoverage .tb-hub-panel p{font-size:14px;line-height:1.45;margin:8px 0}
+#matchCoverage .tb-hub-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}#matchCoverage .tb-hub-links a,#matchCoverage .tb-hub-links button{min-height:44px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #e0b8bc;border-radius:12px;padding:10px 12px;font-size:14px;font-weight:850;color:#920b12;background:#fff;text-decoration:none;cursor:pointer}
+#matchCoverage .tb-hub-links .primary{background:#c9141c;color:#fff}#matchCoverage .tb-status-note{font-size:12px;color:#62656b;line-height:1.4}#matchCoverage .tb-warning{color:#825300;background:#fff4d9;padding:9px;border-radius:10px}
+#matchCoverage audio{display:block;width:100%;margin:10px 0}#matchCoverage .tb-score{font-size:30px;font-weight:950;text-align:center;margin:12px 0}#matchCoverage .tb-score small{display:block;font-size:14px;font-weight:700;margin:5px 0;color:#60636a}
+#matchCoverage #tbLiveEvents{max-height:390px;overflow:auto;overscroll-behavior:contain;display:grid;gap:6px}
+#matchCoverage .tb-event{display:grid;grid-template-columns:48px 1fr;gap:9px;background:#fff;border:1px solid #eee;border-radius:11px;padding:9px;font-size:14px;line-height:1.4}#matchCoverage .tb-event b{color:#b70f17}
+#matchCoverage .tb-embed{aspect-ratio:16/9;background:#151517;border-radius:12px;overflow:hidden;margin:10px 0}#matchCoverage .tb-embed iframe{width:100%;height:100%;border:0}
+#matchCoverage button:focus-visible,#matchCoverage a:focus-visible{outline:3px solid #2176b4;outline-offset:3px}#matchCoverage .tb-source{font-size:11px;margin-top:9px;line-height:1.4}#matchCoverage .tb-source a{color:#920b12}
+@media(max-width:360px){#matchCoverage .tb-live-tabs button{font-size:13px}#matchCoverage .tb-hub-panel{padding:10px}}
+`;
+    document.head.append(style);
+    shell.innerHTML=`<div class="section-head"><h2>⚽ Vivi la partita</h2><small id="tbHubPhase">Collegamento…</small></div>
+<article class="post match-coverage-card" id="matchCoverageCard"><div class="post-body">
+<div class="match-coverage-top"><span class="match-coverage-badge" id="matchCoverageBadge">📡 MATCH CENTER</span><span class="match-coverage-countdown" id="matchCoverageCountdown"></span></div>
+<h3 id="matchCoverageTitle">La partita del Bari</h3><p class="match-coverage-kickoff" id="matchCoverageKickoff"></p>
+<div class="tb-live-tabs" role="tablist" aria-label="Segui la partita"><button id="tb-tab-watch" type="button" role="tab" aria-selected="false" aria-controls="tb-panel-watch" data-live-tab="watch" tabindex="-1"><span aria-hidden="true">📺</span>Guarda</button><button id="tb-tab-listen" type="button" role="tab" aria-selected="false" aria-controls="tb-panel-listen" data-live-tab="listen" tabindex="-1"><span aria-hidden="true">🎙️</span>Salomone</button><button id="tb-tab-text" type="button" role="tab" aria-selected="true" aria-controls="tb-panel-text" data-live-tab="text"><span aria-hidden="true">📝</span>Cronaca</button></div>
+<div class="tb-hub-panel" id="tb-panel-watch" role="tabpanel" aria-labelledby="tb-tab-watch" hidden><h4>📺 Guarda la partita</h4><div id="tbWatchOptions"></div><div id="tbEmbedHost"></div><p class="tb-status-note">La diretta web si apre sul servizio ufficiale. Un’eventuale trasmissione TV in chiaro non implica che il video sia disponibile gratuitamente online.</p></div>
+<div class="tb-hub-panel" id="tb-panel-listen" role="tabpanel" aria-labelledby="tb-tab-listen" hidden><h4>🎙️ Michele Salomone · Voce al Bari</h4><p>Il programma di Radio Norba Music dedicato alle partite del Bari. Premi ▶ per ascoltare il segnale dell’emittente.</p><button type="button" class="live-radio-play" id="tbRadioPlay" aria-pressed="false">▶ Ascolta Salomone</button><audio id="tbHubAudio" controls preload="none" aria-label="Radio Norba Music"></audio><p class="tb-status-note" id="tbRadioStatus" role="status">L’audio parte solo con un tuo tocco.</p><div class="tb-hub-links"><a href="https://play.radionorba.it/#channel=radio-norba-music" target="_blank" rel="noopener noreferrer">Apri il lettore ufficiale ↗</a></div><div class="tb-source">Fonte: <a href="https://radionorba.it/voce-al-bari-2/" target="_blank" rel="noopener noreferrer">Radio Norba · Voce al Bari</a>. Fuori dalla trasmissione sportiva ascolti il palinsesto della radio.</div></div>
+<div class="tb-hub-panel" id="tb-panel-text" role="tabpanel" aria-labelledby="tb-tab-text"><div class="tb-score" id="tbHubScore">—<small>In attesa della fonte live</small></div><p class="tb-status-note" id="tbLiveFreshness" role="status">Collegamento alla cronaca…</p><div id="tbLiveEvents" aria-label="Cronaca della partita"></div><div class="tb-hub-links"><button type="button" id="tbRefreshLive">🔄 Aggiorna</button><a id="tbFullChronicle" href="https://www.corrieredellosport.it/squadra/calcio/bari/calendario/t122" target="_blank" rel="noopener noreferrer">Cronaca sulla fonte ↗</a></div><p class="tb-source">Eventi sintetici con fonte. Risultato e finale compaiono solo quando ricevuti dal servizio dati.</p></div>
+<div class="tb-hub-links"><button type="button" id="tbInviteLive">↗ Invita un tifoso</button><button type="button" id="tbLiveCommunity">💬 Community</button></div>
+</div></article>`;
+    shell.addEventListener('click',event=>{const tab=event.target.closest('[data-live-tab]');if(tab){openTab(tab.dataset.liveTab);if(tab.dataset.liveTab==='listen' && $('tbHubAudio').paused)playRadio();}});
+    shell.querySelector('[role=tablist]').addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const tabs=['watch','listen','text'];let n=tabs.indexOf(state.tab);n=event.key==='Home'?0:event.key==='End'?2:(n+(event.key==='ArrowLeft'?-1:1)+3)%3;openTab(tabs[n]);$('tb-tab-'+tabs[n]).focus();});
+    $('tbRadioPlay').addEventListener('click',playRadio);
+    $('tbRefreshLive').addEventListener('click',()=>poll());
+    $('tbInviteLive').addEventListener('click',()=>window.shareMatchCoverage());
+    $('tbLiveCommunity').addEventListener('click',()=>window.openCoverageCommunity('community'));
+    const radio=$('tbHubAudio');
+    radio.addEventListener('playing',()=>{clearTimeout(radioTimeout);state.radioPending=false;radioUI('playing','In ascolto su Radio Norba Music.');});
+    radio.addEventListener('pause',()=>{if(!state.radioPending)radioUI('idle','Audio in pausa.');});
+    radio.addEventListener('waiting',()=>{if(!radio.paused)radioUI('loading','Caricamento audio…');});
+    radio.addEventListener('error',()=>radioError());
+    return true;
   }
-
-  function safeEmbed(value) {
-    const url = safeHttps(value);
-    return url && ALLOWED_EMBEDS.has(url.hostname) && url.pathname.startsWith('/embed/') ? url.href : '';
+  function openTab(tab){state.tab=tab;for(const name of ['watch','listen','text']){$('tb-panel-'+name).hidden=name!==tab;$('tb-tab-'+name).setAttribute('aria-selected',String(name===tab));$('tb-tab-'+name).tabIndex=name===tab?0:-1;}}
+  function radioUI(mode,message){const b=$('tbRadioPlay');b.textContent=mode==='playing'?'Ⅱ Metti in pausa':mode==='loading'?'■ Ferma collegamento':mode==='error'?'▶ Riprova audio':'▶ Ascolta Salomone';b.setAttribute('aria-pressed',String(mode==='playing'));$('tbRadioStatus').textContent=message;}
+  function radioError(){clearTimeout(radioTimeout);state.radioPending=false;$('tbHubAudio').pause();radioUI('error','L’audio non è partito qui. Riprova o apri il lettore ufficiale qui sotto.');}
+  async function playRadio(){
+    const audio=$('tbHubAudio');if(!audio)return;
+    if(state.radioPending||!audio.paused){state.radioPending=false;clearTimeout(radioTimeout);audio.pause();radioUI('idle','Audio in pausa.');return;}
+    $('liveRadio')?.pause();state.radioPending=true;radioUI('loading','Collegamento a Radio Norba Music…');
+    if(!audio.getAttribute('src'))audio.src=typeof LIVE_RADIO_STREAM==='string'?LIVE_RADIO_STREAM:'https://ad1.xdevel.com/radionorbamusic';
+    if(audio.error)audio.load();
+    radioTimeout=setTimeout(radioError,12000);
+    try{await audio.play();}catch(_){radioError();}
   }
-
-  function formatKickoff(value) {
-    return new Intl.DateTimeFormat('it-IT', {
-      timeZone: 'Europe/Rome',
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(new Date(value));
+  function renderVideo(){
+    const f=state.fixture,c=f?.coverage||{},key=JSON.stringify([f?.id,c]);if(key===state.providerKey)return;state.providerKey=key;
+    $('tbEmbedHost').replaceChildren();const box=$('tbWatchOptions');box.replaceChildren();
+    const p=document.createElement('p');p.className='tb-warning';
+    const isTV=c.access==='free-tv'||(c.access==='free-link'&&!c.watchUrl);
+    p.textContent=isTV?`${c.provider||'TV in chiaro'}: ${c.note||'Disponibile sul digitale terrestre. Streaming gratuito non confermato.'}`:c.note||'Scegli un servizio ufficiale. La disponibilità dipende dai diritti della singola partita.';box.append(p);
+    const links=document.createElement('div');links.className='tb-hub-links';
+    function add(label,url,primary=false){const href=safe(url);if(!href)return;const a=document.createElement('a');a.textContent=label;a.href=href;a.target='_blank';a.rel='noopener noreferrer';if(primary)a.className='primary';links.append(a);}
+    if(c.access==='free-link'&&c.watchUrl)add('▶ Apri la diretta gratuita',c.watchUrl,true);
+    const paid=c.paid||[];for(const service of paid)add(service.name+' · abbonamento ↗',service.url,true);
+    if(!paid.length && /serie c/i.test(f?.competition||''))add('▶ Apri NOW · abbonamento','https://www.nowtv.it/sport/calcio/serie-c',true);
+    if(c.source)add('Fonte programmazione ↗',c.source);
+    box.append(links);
+    const u=safe(c.embedUrl);let embed='';try{const x=new URL(u);if(c.access==='free-embed'&&c.embedAuthorized===true&&/^(www\.)?youtube(-nocookie)?\.com$/.test(x.hostname)&&/^\/embed\/[A-Za-z0-9_-]{11}$/.test(x.pathname))embed='https://www.youtube-nocookie.com'+x.pathname;}catch(_){}
+    if(embed){const b=document.createElement('button');b.type='button';b.className='primary';b.textContent='▶ Guarda qui · player ufficiale';links.prepend(b);b.addEventListener('click',()=>{$('tbHubAudio').pause();b.hidden=true;const wrap=document.createElement('div');wrap.className='tb-embed';const frame=document.createElement('iframe');frame.src=embed;frame.title='Diretta ufficiale';frame.allow='fullscreen; picture-in-picture; encrypted-media';frame.allowFullscreen=true;wrap.append(frame);$('tbEmbedHost').append(wrap);});}
   }
-
-  function formatConfirmed(value) {
-    if (!value) return 'programmazione ufficiale';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return 'programmazione ufficiale';
-    return 'verificata il ' + new Intl.DateTimeFormat('it-IT', {
-      timeZone: 'Europe/Rome',
-      day: 'numeric',
-      month: 'long',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
+  function renderNews(phase){
+    const card=$('newsMatchCoverage'),f=state.fixture;if(!card)return;
+    const key=(f?.id||'')+'-'+phase;if(key===state.newsKey)return;state.newsKey=key;
+    card.hidden=!f;card.dataset.runtimeActive=String(Boolean(f));if(!f){card.style.display='none';return;}
+    card.style.removeProperty('display');card.dataset.publishedAt=f.coverage?.confirmedAt||f.kickoff;
+    const set=(id,text)=>{if($(id))$(id).textContent=text;};
+    set('newsMatchCoverageBadge',phase==='live'?'🔴 DIRETTA':phase==='finished'?'✅ POST PARTITA':'📡 COPERTURA PARTITA');
+    set('newsMatchCoverageTime',format(f.kickoff));set('newsMatchCoverageTitle',f.home+'–'+f.away+': video, Salomone e cronaca');
+    set('newsMatchCoverageText','Apri il Match Center: servizi video ufficiali, Radio Norba Music e cronaca testuale. La TV in chiaro è distinta dallo streaming web.');
+    set('newsMatchCoverageStatus','📺 Guarda · 🎙️ Salomone · 📝 Cronaca');set('newsMatchCoverageKickoff',format(f.kickoff));
+    set('newsMatchCoverageSourceNote','Copertura della singola partita');
+    if($('newsMatchCoverageSource')){$('newsMatchCoverageSource').href=safe(f.coverage?.source||f.source)||'https://www.nowtv.it/sport/calcio/serie-c';$('newsMatchCoverageSource').textContent='Fonte programmazione ↗';}
+    window.sortNewsChronologically?.();window.filterNews?.();
   }
-
-  function countdown(kickoff, now) {
-    const difference = kickoff - now;
-    if (difference <= 0) return '🔴 PARTITA IN CORSO';
-    const hours = Math.floor(difference / 3600000);
-    const minutes = Math.floor((difference % 3600000) / 60000);
-    return hours >= 24 ? '⏳ Tra ' + Math.floor(hours / 24) + 'g ' + (hours % 24) + 'h' : '⏳ Tra ' + hours + 'h ' + minutes + 'm';
+  function render(){
+    if(!state.started)return;const f=state.fixture,shell=$('matchCoverage'),d=state.data,phase=currentPhase();
+    shell.hidden=!f;if(!f){renderNews('idle');return;}
+    $('liveMatch')?.setAttribute('hidden','');
+    $('matchCoverageTitle').textContent=f.home+' – '+f.away;$('matchCoverageKickoff').textContent=format(f.kickoff)+' · '+(f.competition||'Partita del Bari');
+    const labels={pre:'🔥 PREPARTITA',live:'🔴 LIVE',finished:'✅ FINALE',waiting:'📡 ATTESA DATI'};
+    $('tbHubPhase').textContent=d?.stale?'⚠️ ULTIMO DATO':labels[phase];$('matchCoverageBadge').textContent=d?.stale?'⚠️ DATI IN RITARDO':labels[phase];$('matchCoverageBadge').classList.toggle('live',phase==='live'&&!d?.stale);
+    const diff=Date.parse(f.kickoff)-Date.now();$('matchCoverageCountdown').textContent=diff>0?'⏳ '+Math.floor(diff/HOUR)+'h '+Math.floor(diff%HOUR/60000)+'m':d?.status||'Aggiornamento in corso';
+    const score=d?.score||'—';$('tbHubScore').replaceChildren(document.createTextNode(score));const small=document.createElement('small');small.textContent=(d?.status||labels[phase])+' · '+f.home+'–'+f.away;$('tbHubScore').append(small);
+    const bad=d?.unavailable||d?.stale||!d;const freshness=$('tbLiveFreshness');freshness.classList.toggle('tb-warning',Boolean(bad));freshness.textContent=bad?(d?.message||'Collegamento alla fonte in corso. Non mostriamo risultati non verificati.'):'Ultimo controllo '+clock(d.checkedAt||d.updatedAt)+' · aggiornamento automatico ogni 25 secondi durante la gara';
+    const events=Array.isArray(d?.events)?d.events:[],key=JSON.stringify(events);
+    if(key!==state.eventsKey){state.eventsKey=key;const container=$('tbLiveEvents'),top=container.scrollTop;container.innerHTML=events.length?events.map(e=>`<div class="tb-event"><b>${esc(e.minute||'')}</b><span>${icon(e.text)} ${esc(e.text)}</span></div>`).join(''):'<p>Nessun evento live verificato ricevuto. Puoi aprire la cronaca sulla fonte o ascoltare Radio Norba Music.</p>';container.scrollTop=top;}
+    $('tbFullChronicle').href=safe(d?.source)||(f.livePath?'https://www.corrieredellosport.it'+f.livePath:'https://www.corrieredellosport.it/squadra/calcio/bari/calendario/t122');
+    if($('snapshotMatchDate'))$('snapshotMatchDate').textContent=labels[phase];if($('snapshotMatchLabel'))$('snapshotMatchLabel').textContent=f.home+' '+(d?.score||'–')+' '+f.away;
+    renderVideo();renderNews(phase);
   }
-
-  function selectFixture(fixtures, now) {
-    return (fixtures || [])
-      .filter(fixture => {
-        const kickoff = Date.parse(fixture.kickoff);
-        return Number.isFinite(kickoff) && now >= kickoff - WINDOW_BEFORE && now <= kickoff + WINDOW_AFTER;
-      })
-      .sort((a, b) => Date.parse(a.kickoff) - Date.parse(b.kickoff))[0] || null;
+  function icon(text){const s=String(text||'').toLowerCase();return /gol|autorete/.test(s)?'⚽':/espuls|seconda ammon/.test(s)?'🟥':/ammon/.test(s)?'🟨':/cambio|sostit/.test(s)?'🔄':/parat/.test(s)?'🧤':/intervallo/.test(s)?'⏸️':/finale/.test(s)?'🏁':'📍';}
+  async function refreshFixtures(){
+    if(calendarBusy)return;calendarBusy=true;try{const r=await fetch('/data/fixtures.json',{cache:'no-store',signal:AbortSignal.timeout(8000)});if(!r.ok)throw new Error();const json=await r.json();if(!Array.isArray(json.fixtures))throw new Error();state.fixtures=json.fixtures;state.calendarAt=Date.now();}catch(_){}finally{calendarBusy=false;}
+    const f=select();if(f?.id!==state.fixture?.id){state.data=null;state.eventsKey='';state.providerKey='';state.newsKey='';}state.fixture=f;
   }
-
-  function renderProvider(coverage, isLive) {
-    const access = coverage.access || 'checking';
-    const provider = coverage.provider || 'Disponibilità video in verifica';
-    const providerName = $('matchProviderName');
-    const providerDetail = $('matchProviderDetail');
-    const providerStatus = $('matchProviderStatus');
-    const providerIcon = $('matchProviderIcon');
-    const officialWatch = $('matchOfficialWatch');
-    const video = $('matchCoverageVideo');
-
-    providerName.textContent = provider;
-    providerStatus.className = 'match-provider-status';
-    officialWatch.hidden = true;
-    officialWatch.removeAttribute('href');
-    video.hidden = true;
-    video.replaceChildren();
-
-    if (access === 'free-embed') {
-      const embed = safeEmbed(coverage.embedUrl);
-      providerIcon.textContent = '📺';
-      providerStatus.textContent = 'GRATIS';
-      providerStatus.classList.add('free');
-      providerDetail.textContent = embed ? 'Player ufficiale disponibile su TB.' : 'Apri la fonte ufficiale.';
-      if (embed && isLive) {
-        const frame = document.createElement('iframe');
-        frame.src = embed;
-        frame.title = 'Diretta video ufficiale della partita';
-        frame.loading = 'lazy';
-        frame.allow = 'autoplay; encrypted-media; picture-in-picture';
-        frame.allowFullscreen = true;
-        frame.referrerPolicy = 'strict-origin-when-cross-origin';
-        video.append(frame);
-        video.hidden = false;
-      }
-    } else if (access === 'free-link') {
-      providerIcon.textContent = '📺';
-      providerStatus.textContent = 'GRATIS';
-      providerStatus.classList.add('free');
-      providerDetail.textContent = coverage.note || (coverage.watchUrl
-        ? 'La diretta si apre sul sito dell’emittente.'
-        : 'Diretta gratuita disponibile sul canale TV indicato.');
-    } else if (access === 'paid') {
-      providerIcon.textContent = '🔒';
-      providerStatus.textContent = 'ABBONAMENTO';
-      providerStatus.classList.add('paid');
-      providerDetail.textContent = coverage.note || 'Nessuna diretta video gratuita ufficiale annunciata.';
-    } else if (access === 'none') {
-      providerIcon.textContent = '🎙️';
-      providerStatus.textContent = 'TB LIVE';
-      providerDetail.textContent = 'Salomone e cronaca descrittiva su Trenino Bari.';
-    } else {
-      providerIcon.textContent = '🔎';
-      providerStatus.textContent = 'IN VERIFICA';
-      providerDetail.textContent = 'TB controlla emittenti e canali ufficiali prima del calcio d’inizio.';
-    }
-
-    const watchUrl = safeHttps(coverage.watchUrl);
-    if (watchUrl && (access === 'free-link' || access === 'free-embed')) {
-      officialWatch.href = watchUrl.href;
-      officialWatch.textContent = access === 'free-link' ? '📺 Guarda gratis sulla fonte ↗' : '📺 Apri il player ufficiale ↗';
-      officialWatch.hidden = false;
-    }
-  }
-
-  function hideNewsCoverage() {
-    const card = $('newsMatchCoverage');
-    if (!card) return;
-    card.hidden = true;
-    card.dataset.runtimeActive = 'false';
-    card.style.display = 'none';
-    if (typeof window.filterNews === 'function') window.filterNews();
-  }
-
-  function renderNewsCoverage(fixture, coverage, kickoff, now, isLive) {
-    const card = $('newsMatchCoverage');
-    if (!card) return;
-
-    const match = fixture.home + '–' + fixture.away;
-    const access = coverage.access || 'checking';
-    const provider = coverage.provider || 'disponibilità video in verifica';
-    const isFree = access === 'free-embed' || access === 'free-link';
-    let status = '🔎 Diretta video in verifica';
-
-    if (isFree) status = '📺 Gratis · ' + provider;
-    else if (access === 'paid') status = '🔒 ' + provider + ' · abbonamento';
-    else if (access === 'none') status = '🎙️ TB Live · radio e cronaca';
-
-    card.hidden = false;
-    card.dataset.runtimeActive = 'true';
-    card.dataset.publishedAt = new Date(now).toISOString();
-    card.style.removeProperty('display');
-    $('newsMatchCoverageBadge').className = 'badge ' + (isLive ? 'official' : 'analysis');
-    $('newsMatchCoverageBadge').textContent = isLive ? '🔴 PARTITA IN CORSO' : '📡 GUIDA PREPARTITA';
-    $('newsMatchCoverageTime').textContent = countdown(kickoff, now);
-    $('newsMatchCoverageTitle').textContent = isLive
-      ? match + ': segui la partita su TB'
-      : match + ': dove seguirla e vivere il prepartita';
-    $('newsMatchCoverageText').textContent = isLive
-      ? (isFree
-          ? 'Diretta video ufficiale disponibile: dalla copertura TB puoi aprire il player, seguire la cronaca descrittiva e partecipare con gli altri tifosi.'
-          : 'Segui la voce di Michele Salomone, la cronaca descrittiva e le interazioni della community nella copertura partita.')
-      : (isFree
-          ? 'Diretta gratuita ufficiale confermata. Nella copertura partita trovi fonte, orario, condivisione e accesso alla community.'
-          : 'La disponibilità video è indicata senza ambiguità; durante la gara restano disponibili radiocronaca, cronaca descrittiva e community.');
-    $('newsMatchCoverageStatus').textContent = status;
-    $('newsMatchCoverageKickoff').textContent = formatKickoff(fixture.kickoff);
-
-    const source = safeHttps(coverage.source || fixture.source);
-    const sourceLink = $('newsMatchCoverageSource');
-    if (source) sourceLink.href = source.href;
-    sourceLink.textContent = (coverage.sourceName || 'Fonte ufficiale') + ' ↗';
-    $('newsMatchCoverageSourceNote').textContent = formatConfirmed(coverage.confirmedAt);
-
-    if (typeof window.sortNewsChronologically === 'function') window.sortNewsChronologically();
-    if (typeof window.filterNews === 'function') window.filterNews();
-  }
-
-  function render() {
-    const fixture = state.fixture;
-    const shell = $('matchCoverage');
-    if (!fixture || !shell) {
-      if (shell) shell.hidden = true;
-      hideNewsCoverage();
-      return;
-    }
-
-    const now = Date.now();
-    const kickoff = Date.parse(fixture.kickoff);
-    if (now < kickoff - WINDOW_BEFORE || now > kickoff + WINDOW_AFTER) {
-      shell.hidden = true;
-      hideNewsCoverage();
-      return;
-    }
-
-    const isLive = now >= kickoff;
-    const coverage = fixture.coverage || { access: 'checking' };
-    shell.hidden = false;
-    $('matchCoverageHeading').textContent = isLive ? '🔴 Partita in diretta' : '📡 Dove seguirla';
-    $('matchCoverageWhen').textContent = isLive ? 'Segui e partecipa' : 'Disponibilità verificata';
-    $('matchCoverageBadge').textContent = isLive ? '🔴 LIVE · TRENINO BARI' : '📡 PREPARTITA · ' + (coverage.access === 'checking' ? 'IN VERIFICA' : 'VERIFICATO');
-    $('matchCoverageBadge').classList.toggle('live', isLive);
-    $('matchCoverageCountdown').textContent = countdown(kickoff, now);
-    $('matchCoverageTitle').textContent = fixture.home + '–' + fixture.away;
-    $('matchCoverageKickoff').textContent = '⚽ ' + formatKickoff(fixture.kickoff) + ' · ' + (fixture.competition || 'Serie C');
-    $('matchCoverageMessage').textContent = isLive
-      ? (coverage.access === 'free-embed' || coverage.access === 'free-link'
-          ? 'Guarda la fonte video ufficiale, reagisci con gli altri tifosi e segui anche radiocronaca e cronaca descrittiva.'
-          : 'La copertura TB continua con la voce di Michele Salomone, la cronaca descrittiva e la community biancorossa.')
-      : (coverage.access === 'free-embed' || coverage.access === 'free-link'
-          ? 'Diretta gratuita ufficiale confermata. Condividi ora la partita e porta un altro tifoso sul Trenino.'
-          : 'Condividi l’appuntamento: durante la gara troverai radiocronaca, cronaca descrittiva e interazioni della community.');
-
-    renderProvider(coverage, isLive);
-    renderNewsCoverage(fixture, coverage, kickoff, now, isLive);
-
-    const source = safeHttps(coverage.source || fixture.source);
-    const sourceLink = $('matchCoverageSource');
-    if (source) sourceLink.href = source.href;
-    sourceLink.textContent = (coverage.sourceName || 'Fonte ufficiale') + ' ↗';
-    $('matchCoverageSourceNote').textContent = formatConfirmed(coverage.confirmedAt);
-
-    document.title = isLive ? '🔴 ' + fixture.home + '–' + fixture.away + ' • Trenino Bari' : 'TB • Trenino Bari';
-  }
-
-  window.shareMatchCoverage = async () => {
-    if (!state.fixture) return;
-    const fixture = state.fixture;
-    const url = new URL('/', location.origin);
-    url.searchParams.set('match', fixture.id);
-    url.hash = 'copertura-partita';
-    const text = '🐓⚽ ' + fixture.home + '–' + fixture.away + ' su Trenino Bari: dove vederla, radiocronaca, cronaca live e community. Sali sul Trenino! ❤️🤍';
-    try {
-      if (navigator.share) await navigator.share({ title: fixture.home + '–' + fixture.away + ' • Trenino Bari', text, url: url.href });
-      else {
-        await navigator.clipboard.writeText(text + ' ' + url.href);
-        alert('🔗 Messaggio e link copiati!');
-      }
-    } catch (error) {
-      if (error.name !== 'AbortError') alert('Condivisione non disponibile. Riprova.');
-    }
-  };
-
-  window.openCoverageCommunity = mode => {
-    if (typeof window.switchView === 'function') window.switchView('community');
-    const target = mode === 'prediction' ? $('tbPrediction') : $('view-community');
-    setTimeout(() => target?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
-  };
-
-  window.openNewsMatchCoverage = () => {
-    if (typeof window.switchView === 'function') window.switchView('home');
-    setTimeout(() => $('matchCoverage')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
-  };
-
-  async function init() {
-    try {
-      const response = await fetch('/data/fixtures.json', { cache: 'no-store' });
-      if (!response.ok) throw new Error('Calendario non disponibile');
-      const data = await response.json();
-      state.fixture = selectFixture(data.fixtures, Date.now());
+  function schedule(delay){if(typeof livePollTimer!=='undefined'){clearTimeout(livePollTimer);livePollTimer=setTimeout(poll,delay);}else{clearTimeout(state.timer);state.timer=setTimeout(poll,delay);}}
+  async function poll(){
+    if(!state.started||state.busy)return;
+    if(document.hidden){schedule(60000);return;}
+    state.busy=true;
+    try{
+      if(Date.now()-state.calendarAt>300000||!state.fixtures.length)await refreshFixtures();else{const f=select();if(f?.id!==state.fixture?.id){state.data=null;state.eventsKey='';state.fixture=f;}}
+      render();if(!state.fixture)return;
+      const r=await fetch('/api/live',{cache:'no-store',signal:AbortSignal.timeout(18000)});if(!r.ok)throw new Error('Fonte non disponibile');
+      const data=await r.json();if(!valid(data))throw new Error('La risposta non corrisponde alla partita');state.data=data;
+      if(typeof liveMatchData!=='undefined')liveMatchData=data;
       render();
-      if (state.fixture) state.timer = setInterval(render, 30000);
-      if (new URL(location.href).searchParams.get('match') === state.fixture?.id) {
-        setTimeout(() => $('matchCoverage')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250);
-      }
-    } catch (_) {
-      $('matchCoverage')?.setAttribute('hidden', '');
-      hideNewsCoverage();
-    }
+    }catch(_){if(state.data)state.data={...state.data,unavailable:true,stale:true,message:'Collegamento momentaneamente interrotto: gli ultimi dati restano visibili.'};render();}
+    finally{state.busy=false;const k=Date.parse(state.fixture?.kickoff),near=Number.isFinite(k)&&Date.now()>=k-90*60000&&Date.now()<=k+5*HOUR;schedule(near?25000:180000);}
   }
-
-  document.addEventListener('DOMContentLoaded', init, { once: true });
+  window.shareMatchCoverage=async()=>{if(!state.fixture)return;const f=state.fixture,u=new URL('/',location.origin);u.searchParams.set('match',f.id);u.hash='copertura-partita';const message={title:f.home+'–'+f.away+' · Trenino Bari',text:'🐓 Vivi la partita: video ufficiale, Salomone e cronaca. ❤️🤍',url:u.href};try{if(navigator.share)await navigator.share(message);else{await navigator.clipboard.writeText(u.href);$('tbHubPhase').textContent='🔗 Link copiato';}}catch(error){if(error.name!=='AbortError')prompt('Copia il link della partita:',u.href);}};
+  window.openCoverageCommunity=()=>{window.switchView?.('community');};
+  window.openNewsMatchCoverage=()=>{window.switchView?.('home');$('matchCoverage')?.scrollIntoView({behavior:'smooth',block:'start'});};
+  // Use one polling loop. Existing visibility listeners resolve to this function too.
+  window.loadLiveMatch=poll;
+  window.renderLiveMatch=()=>{if(typeof liveMatchData!=='undefined'&&valid(liveMatchData)){state.data=liveMatchData;render();}};
+  function init(){if(state.started||!build())return;state.started=true;if(typeof livePollTimer!=='undefined')clearTimeout(livePollTimer);poll();document.addEventListener('visibilitychange',()=>{if(!document.hidden)poll();});}
+  window.TBLiveHub={version:'20260915.2',refresh:poll};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
