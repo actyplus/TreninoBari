@@ -12,10 +12,10 @@
       "coverage": {
         "access": "free-tv",
         "provider": "Antenna Sud · canale 14",
-        "source": "https://www.tuttopotenza.com/primo-piano/bari-potenza-vedere-partita-tv-70425",
-        "sourceName": "TuttoPotenza · guida TV",
-        "confirmedAt": "2026-09-15T21:45:00+02:00",
-        "note": "In chiaro sul digitale terrestre in Puglia e Basilicata. Streaming web gratuito della partita non confermato.",
+        "source": "https://www.antennasud.com/partite-in-diretta/",
+        "sourceName": "Antenna Sud · palinsesto ufficiale",
+        "confirmedAt": "2026-09-15T22:08:39+02:00",
+        "note": "Bari–Potenza è annunciata sul digitale terrestre in Puglia e Basilicata. Il palinsesto ufficiale non offre lo streaming web della gara. Un player generico del canale non garantisce la visione della partita; su TB non è attivo un embedding di questa gara.",
         "paid": [
           {"name":"NOW","url":"https://www.nowtv.it/sport/calcio/serie-c"},
           {"name":"Sky Go","url":"https://skygo.sky.it/"}
