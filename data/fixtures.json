@@ -16,7 +16,10 @@
         "sourceName": "TuttoPotenza · guida TV",
         "confirmedAt": "2026-09-15T21:45:00+02:00",
         "note": "In chiaro sul digitale terrestre in Puglia e Basilicata. Streaming web gratuito della partita non confermato.",
-        "paid": [{"name":"NOW","url":"https://www.nowtv.it/sport/calcio/serie-c"}]
+        "paid": [
+          {"name":"NOW","url":"https://www.nowtv.it/sport/calcio/serie-c"},
+          {"name":"Sky Go","url":"https://skygo.sky.it/"}
+        ]
       }
     },
     {
@@ -44,6 +47,7 @@
       "kickoff": "2026-09-26T17:30:00+02:00",
       "source": "https://www.sscalciobari.it/it/schedule/1/",
       "competition": "Serie C",
+      "livePath": "/live/partita/bari-cosenza-2675628",
       "coverage": {"paid":[{"name":"NOW","url":"https://www.nowtv.it/sport/calcio/serie-c"}]}
     },
     {
@@ -53,6 +57,7 @@
       "kickoff": "2026-10-04T20:30:00+02:00",
       "source": "https://www.sscalciobari.it/it/schedule/1/",
       "competition": "Serie C",
+      "livePath": "/live/partita/salernitana-bari-2675646",
       "coverage": {"paid":[{"name":"NOW","url":"https://www.nowtv.it/sport/calcio/serie-c"}]}
     }
   ]
