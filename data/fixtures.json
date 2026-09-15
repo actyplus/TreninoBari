@@ -1,12 +1,12 @@
 {
-  "verifiedAt": "2026-09-15T21:45:00+02:00",
+  "verifiedAt": "2026-09-15T23:00:00+02:00",
   "fixtures": [
     {
       "id": "2026-09-15-bari-potenza",
       "home": "Bari",
       "away": "Potenza",
       "kickoff": "2026-09-15T21:00:00+02:00",
-      "source": "https://www.sscalciobari.it/it/news/7353-bari-potenza-le-info-utili/",
+      "source": "https://www.sscalciobari.it/it/news/7364-seriec-sky-wifi-5a-g-gir-c-bari-potenza-0-0-30-40st/",
       "competition": "Serie C",
       "livePath": "/live/partita/bari-potenza-2675608",
       "coverage": {
@@ -15,7 +15,7 @@
         "source": "https://www.antennasud.com/partite-in-diretta/",
         "sourceName": "Antenna Sud · palinsesto ufficiale",
         "confirmedAt": "2026-09-15T22:08:39+02:00",
-        "note": "Bari–Potenza è annunciata sul digitale terrestre in Puglia e Basilicata. Il palinsesto ufficiale non offre lo streaming web della gara. Un player generico del canale non garantisce la visione della partita; su TB non è attivo un embedding di questa gara.",
+        "note": "Bari–Potenza è stata trasmessa sul digitale terrestre in Puglia e Basilicata. Il palinsesto ufficiale non offriva lo streaming web della gara; su TB non è stato attivato un embedding non verificato.",
         "paid": [
           {"name":"NOW","url":"https://www.nowtv.it/sport/calcio/serie-c"},
           {"name":"Sky Go","url":"https://skygo.sky.it/"}
@@ -31,7 +31,7 @@
       "competition": "Serie C",
       "livePath": "/live/partita/sorrento-bari-2675627",
       "coverage": {
-        "access": "free-link",
+        "access": "free-tv",
         "provider": "Antenna Sud · canale 14",
         "source": "https://www.antennasud.com/partite-in-diretta/",
         "sourceName": "Antenna Sud",
