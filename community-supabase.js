@@ -38,7 +38,7 @@
     if ($('accountStatusTitle')) $('accountStatusTitle').textContent='Accesso non completato';
     if ($('accountStatusText')) $('accountStatusText').textContent='Leggi il messaggio sotto e riprova';
     showMessage(authErrorMessage(error,code),'error');
-    openCommunityView();
+    // Account errors stay in the account panel: never redirect a normal visit.
   }
   function finishOAuthReturn() {
     if (!returning) return;
@@ -107,10 +107,6 @@
     const hash = new URLSearchParams(url.hash.replace(/^#/,''));
     if (['access_token','refresh_token','error','error_code','error_description'].some(key=>hash.has(key))) url.hash='';
     history.replaceState({}, document.title, url.pathname + url.search + url.hash);
-  }
-
-  function openCommunityView() {
-    if (typeof window.switchView === 'function') window.switchView('community');
   }
 
   async function loadProfileSafely(user) {
@@ -469,7 +465,7 @@
   window.addEventListener('storage', event => { if (event.key?.includes('auth-token') && !initializing) syncVisibleSession().catch(()=>{}); });
   window.addEventListener('pageshow', event => {
     resetGoogleButton();
-    if(callbackError && !currentUser && !initializing) openCommunityView();
+    // pageshow must preserve the Home entry selected by index.html.
     if(event.persisted && !initializing) syncVisibleSession().catch(()=>{});
   });
 
