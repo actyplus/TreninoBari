@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-09-17T15:56:00+02:00",
+  "verifiedAt": "2026-09-18T15:56:00+02:00",
   "fixtures": [
     {
       "id": "2026-09-19-sorrento-bari",
@@ -29,7 +29,7 @@
       "home": "Bari",
       "away": "Cosenza",
       "kickoff": "2026-09-26T17:30:00+02:00",
-      "source": "https://www.sscalciobari.it/it/schedule/1/",
+      "source": "https://www.sscalciobari.it/it/news/7378-/",
       "competition": "Serie C",
       "livePath": "/live/partita/bari-cosenza-2675628",
       "coverage": {
