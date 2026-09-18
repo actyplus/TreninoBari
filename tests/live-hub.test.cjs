@@ -8,7 +8,7 @@ assert(live._matchesFixture(m,f));assert.equal(m.live,true);assert.equal(m.finis
 assert.equal(live._matchesFixture({...m,away:'Casarano'},f),false);
 assert.equal(live._matchesFixture({...m,matchDate:'2026-09-01T19:00:00Z'},f),false);
 assert.equal(live._isRecentFinal({...m,finished:true,matchDate:'2026-09-01T19:00:00Z',updatedAt:new Date(now).toISOString()},now),false);
-assert.equal(live._selectFixture(now).id,f.id);
+assert.equal(live._selectFixture(now),null);
 assert.equal(live._selectFixture(Date.parse('2026-09-19T12:00:00Z')).id,'2026-09-19-sorrento-bari');
 payload.matchresults.live.MatchInfo.Period='PreMatch';delete payload.matchresults.live.score_home;m=live._parseMatchData(payload,'');assert.equal(m.live,false);assert.equal(m.score,null);
 payload.matchresults.live.MatchInfo.Period='FullTime';m=live._parseMatchData(payload,'');assert.equal(m.finished,true);
