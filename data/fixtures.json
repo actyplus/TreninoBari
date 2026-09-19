@@ -1,24 +1,6 @@
 {
-  "verifiedAt": "2026-09-18T19:04:00+02:00",
+  "verifiedAt": "2026-09-19T16:00:00+02:00",
   "fixtures": [
-    {
-      "id": "2026-09-19-sorrento-bari",
-      "home": "Sorrento",
-      "away": "Bari",
-      "kickoff": "2026-09-19T14:30:00+02:00",
-      "source": "https://www.sscalciobari.it/it/news/7373-sorrentobari-info-biglietti-settore-ospiti/",
-      "competition": "Serie C",
-      "livePath": "/live/partita/sorrento-bari-2675627",
-      "coverage": {
-        "access": "free-tv",
-        "provider": "Antenna Sud · canale 14",
-        "source": "https://www.antennasud.com/partite-in-diretta/",
-        "sourceName": "Antenna Sud",
-        "confirmedAt": "2026-09-14T18:57:00+02:00",
-        "note": "Diretta gratuita in TV sul canale 14 del digitale terrestre in Puglia e Basilicata; nessuno streaming ufficiale annunciato.",
-        "paid": [{"name": "NOW", "url": "https://www.nowtv.it/sport/calcio/serie-c"}]
-      }
-    },
     {
       "id": "2026-09-26-bari-cosenza",
       "home": "Bari",
