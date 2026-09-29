@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-09-29T12:56:00+02:00",
+  "verifiedAt": "2026-09-29T15:56:00+02:00",
   "fixtures": [
     {
       "id": "2026-10-04-salernitana-bari",
@@ -22,6 +22,7 @@
     {"id":"2026-10-10-bari-giugliano","home":"Bari","away":"Giugliano","kickoff":"2026-10-10T14:30:00+02:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"},
     {"id":"2026-10-18-bari-crotone","home":"Bari","away":"Crotone","kickoff":"2026-10-18T15:00:00+02:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"},
     {"id":"2026-10-23-casertana-bari","home":"Casertana","away":"Bari","kickoff":"2026-10-23T20:30:00+02:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"},
+    {"id":"2026-10-27-potenza-bari-coppa-italia","home":"Potenza","away":"Bari","kickoff":"2026-10-27T20:30:00+01:00","source":"https://www.sscalciobari.it/it/news/7419-coppaitalia-serie-c-regionale-trenitalia-ottavi-potenza-bari-il-27-ottobre/","competition":"Coppa Italia Serie C"},
     {"id":"2026-10-31-bari-scafatese","home":"Bari","away":"Scafatese","kickoff":"2026-10-31T14:30:00+01:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"},
     {"id":"2026-11-09-picerno-bari","home":"Picerno","away":"Bari","kickoff":"2026-11-09T20:30:00+01:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"},
     {"id":"2026-11-14-bari-foggia","home":"Bari","away":"Foggia","kickoff":"2026-11-14T17:30:00+01:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"},
