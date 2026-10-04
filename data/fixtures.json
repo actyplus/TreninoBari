@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-10-03T22:00:00+02:00",
+  "verifiedAt": "2026-10-04T07:00:00+02:00",
   "fixtures": [
     {
       "id": "2026-10-04-salernitana-bari",
@@ -16,21 +16,117 @@
         "sourceName": "SSC Bari / Lega Pro",
         "confirmedAt": "2026-09-18T19:04:00+02:00",
         "note": "Diretta gratuita in TV su Rai Sport; collegamento online ufficiale non ancora indicato.",
-        "paid": [{"name": "NOW", "url": "https://www.nowtv.it/sport/calcio/serie-c"}]
+        "paid": [
+          {
+            "name": "NOW",
+            "url": "https://www.nowtv.it/sport/calcio/serie-c"
+          }
+        ]
       }
     },
-    {"id":"2026-10-10-bari-giugliano","home":"Bari","away":"Giugliano","kickoff":"2026-10-10T14:30:00+02:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"},
-    {"id":"2026-10-18-bari-crotone","home":"Bari","away":"Crotone","kickoff":"2026-10-18T15:00:00+02:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"},
-    {"id":"2026-10-23-casertana-bari","home":"Casertana","away":"Bari","kickoff":"2026-10-23T20:30:00+02:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"},
-    {"id":"2026-10-27-potenza-bari-coppa-italia","home":"Potenza","away":"Bari","kickoff":"2026-10-27T20:30:00+01:00","source":"https://www.sscalciobari.it/it/news/7419-coppaitalia-serie-c-regionale-trenitalia-ottavi-potenza-bari-il-27-ottobre/","competition":"Coppa Italia Serie C"},
-    {"id":"2026-10-31-bari-scafatese","home":"Bari","away":"Scafatese","kickoff":"2026-10-31T14:30:00+01:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"},
-    {"id":"2026-11-09-picerno-bari","home":"Picerno","away":"Bari","kickoff":"2026-11-09T20:30:00+01:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"},
-    {"id":"2026-11-14-bari-foggia","home":"Bari","away":"Foggia","kickoff":"2026-11-14T17:30:00+01:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"},
-    {"id":"2026-11-22-catania-bari","home":"Catania","away":"Bari","kickoff":"2026-11-22T15:00:00+01:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"},
-    {"id":"2026-11-29-bari-savoia","home":"Bari","away":"Savoia","kickoff":"2026-11-29T17:30:00+01:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"},
-    {"id":"2026-12-05-inter-u23-bari","home":"Inter U23","away":"Bari","kickoff":"2026-12-05T14:30:00+01:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"},
-    {"id":"2026-12-13-bari-monopoli","home":"Bari","away":"Monopoli","kickoff":"2026-12-13T17:30:00+01:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"},
-    {"id":"2026-12-19-audace-cerignola-bari","home":"Audace Cerignola","away":"Bari","kickoff":"2026-12-19T17:30:00+01:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"},
-    {"id":"2027-01-03-cavese-bari","home":"Cavese","away":"Bari","kickoff":"2027-01-03T12:30:00+01:00","source":"https://www.sscalciobari.it/it/news/7386-/","competition":"Serie C"}
+    {
+      "id": "2026-10-10-bari-giugliano",
+      "home": "Bari",
+      "away": "Giugliano",
+      "kickoff": "2026-10-10T14:30:00+02:00",
+      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "competition": "Serie C"
+    },
+    {
+      "id": "2026-10-18-bari-crotone",
+      "home": "Bari",
+      "away": "Crotone",
+      "kickoff": "2026-10-18T15:00:00+02:00",
+      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "competition": "Serie C"
+    },
+    {
+      "id": "2026-10-23-casertana-bari",
+      "home": "Casertana",
+      "away": "Bari",
+      "kickoff": "2026-10-23T20:30:00+02:00",
+      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "competition": "Serie C"
+    },
+    {
+      "id": "2026-10-27-potenza-bari-coppa-italia",
+      "home": "Potenza",
+      "away": "Bari",
+      "kickoff": "2026-10-27T20:30:00+01:00",
+      "source": "https://www.sscalciobari.it/it/news/7419-coppaitalia-serie-c-regionale-trenitalia-ottavi-potenza-bari-il-27-ottobre/",
+      "competition": "Coppa Italia Serie C"
+    },
+    {
+      "id": "2026-10-31-bari-scafatese",
+      "home": "Bari",
+      "away": "Scafatese",
+      "kickoff": "2026-10-31T14:30:00+01:00",
+      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "competition": "Serie C"
+    },
+    {
+      "id": "2026-11-09-picerno-bari",
+      "home": "Picerno",
+      "away": "Bari",
+      "kickoff": "2026-11-09T20:30:00+01:00",
+      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "competition": "Serie C"
+    },
+    {
+      "id": "2026-11-14-bari-foggia",
+      "home": "Bari",
+      "away": "Foggia",
+      "kickoff": "2026-11-14T17:30:00+01:00",
+      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "competition": "Serie C"
+    },
+    {
+      "id": "2026-11-22-catania-bari",
+      "home": "Catania",
+      "away": "Bari",
+      "kickoff": "2026-11-22T15:00:00+01:00",
+      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "competition": "Serie C"
+    },
+    {
+      "id": "2026-11-29-bari-savoia",
+      "home": "Bari",
+      "away": "Savoia",
+      "kickoff": "2026-11-29T17:30:00+01:00",
+      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "competition": "Serie C"
+    },
+    {
+      "id": "2026-12-05-inter-u23-bari",
+      "home": "Inter U23",
+      "away": "Bari",
+      "kickoff": "2026-12-05T14:30:00+01:00",
+      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "competition": "Serie C"
+    },
+    {
+      "id": "2026-12-13-bari-monopoli",
+      "home": "Bari",
+      "away": "Monopoli",
+      "kickoff": "2026-12-13T17:30:00+01:00",
+      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "competition": "Serie C"
+    },
+    {
+      "id": "2026-12-19-audace-cerignola-bari",
+      "home": "Audace Cerignola",
+      "away": "Bari",
+      "kickoff": "2026-12-19T17:30:00+01:00",
+      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "competition": "Serie C"
+    },
+    {
+      "id": "2027-01-03-cavese-bari",
+      "home": "Cavese",
+      "away": "Bari",
+      "kickoff": "2027-01-03T12:30:00+01:00",
+      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "competition": "Serie C"
+    }
   ]
 }
