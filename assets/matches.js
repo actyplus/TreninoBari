@@ -9,10 +9,13 @@
   const dateLabel = (key, opts = {}) => new Intl.DateTimeFormat('it-IT', {timeZone:zone,day:'numeric',month:'long',...opts}).format(new Date(key+'T12:00:00Z'));
   const safeURL = raw => { try { const u = new URL(raw); return u.protocol === 'https:' ? u.href : ''; } catch { return ''; } };
   const matches = [...view.querySelectorAll('.mday.has-fixture[data-date]')].map(day => {
-    const parts = day.title.split(' · '), teams = parts[0].split(' - ');
+    const parts = day.title.split(' · '), titleResult = parts[0].match(/\s+(\d+-\d+(?:\s*\([^)]*\))?)$/)?.[1] || '';
+    const teamLabel = titleResult ? parts[0].slice(0, -titleResult.length).trim() : parts[0];
+    const teams = teamLabel.split(' - ');
     const time = parts.find(p => /^\d{2}:\d{2}$/.test(p)) || '';
-    return {date:day.dataset.date,home:teams[0],away:teams[1],competition:parts[1] || 'Serie C',time,
-      source:safeURL(day.dataset.source),round:day.dataset.round || '',result:day.dataset.result || '',notes:''};
+    const competition = parts[1] && !/^(?:finale|\d+-\d+)/i.test(parts[1]) ? parts[1] : 'Serie C';
+    return {date:day.dataset.date,home:teams[0],away:teams[1],competition,time,
+      source:safeURL(day.dataset.source),round:day.dataset.round || '',result:day.dataset.result || titleResult,notes:''};
   }).filter(m => m.home && m.away).sort((a,b)=>a.date.localeCompare(b.date));
   view.querySelectorAll('.match-row[data-date]').forEach(row => {
     const m = matches.find(m=>m.date===row.dataset.date && row.querySelector('.match-main b')?.textContent.trim()===m.home+' - '+m.away);
