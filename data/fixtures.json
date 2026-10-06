@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-10-06T10:05:00+02:00",
+  "verifiedAt": "2026-10-06T13:05:00+02:00",
   "fixtures": [
     {
       "id": "2026-10-10-bari-giugliano",
@@ -7,7 +7,14 @@
       "away": "Giugliano",
       "kickoff": "2026-10-10T14:30:00+02:00",
       "source": "https://www.sscalciobari.it/it/news/7430-bari-giugliano-le-info-utili/",
-      "competition": "Serie C"
+      "competition": "Serie C",
+      "coverage": {
+        "access": "paid",
+        "provider": "Sky Sport / NOW",
+        "source": "https://www.seriec.com/",
+        "sourceName": "Lega Serie C",
+        "confirmedAt": "2026-10-06T13:05:00+02:00"
+      }
     },
     {
       "id": "2026-10-18-bari-crotone",
