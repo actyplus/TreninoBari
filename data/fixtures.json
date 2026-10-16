@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-10-14T09:58:00+02:00",
+  "verifiedAt": "2026-10-16T21:56:00+02:00",
   "fixtures": [
     {
       "id": "2026-10-18-bari-crotone",
@@ -11,9 +11,9 @@
       "coverage": {
         "access": "free-link",
         "provider": "Rai 2",
-        "source": "https://www.seriec.com/news-detail/la-serie-c-e-su-rai-2-domenica-alle-15-ce-casarano-salernitana",
+        "source": "https://www.seriec.com/news-detail/bari-crotone-in-diretta-rai-2",
         "sourceName": "Lega Serie C",
-        "confirmedAt": "2026-10-14T09:58:00+02:00",
+        "confirmedAt": "2026-10-16T21:56:00+02:00",
         "watchUrl": "https://www.raiplay.it/dirette/rai2"
       }
     },
