@@ -15,7 +15,9 @@
     const time = parts.find(p => /^\d{2}:\d{2}$/.test(p)) || '';
     const competition = parts[1] && !/^(?:finale|\d+-\d+)/i.test(parts[1]) ? parts[1] : 'Serie C';
     return {date:day.dataset.date,home:teams[0],away:teams[1],competition,time,
-      source:safeURL(day.dataset.source),round:day.dataset.round || '',result:day.dataset.result || titleResult,notes:day.dataset.note || ''};
+      source:safeURL(day.dataset.source),secondarySource:safeURL(day.dataset.sourceSecondary),
+      secondarySourceLabel:day.dataset.sourceSecondaryLabel || 'Altra fonte ufficiale',
+      round:day.dataset.round || '',result:day.dataset.result || titleResult,notes:day.dataset.note || ''};
   }).filter(m => m.home && m.away).sort((a,b)=>a.date.localeCompare(b.date));
   view.querySelectorAll('.match-row[data-date]').forEach(row => {
     const m = matches.find(m=>m.date===row.dataset.date && row.querySelector('.match-main b')?.textContent.trim()===m.home+' - '+m.away);
@@ -94,8 +96,9 @@
       $('tm-detail').innerHTML=`<span class="tm-eyebrow">${esc(dateLabel(selected,{weekday:'long',year:'numeric'}))}</span><h3>${selected===today?'Oggi nessuna partita in calendario':'Nessuna gara con i filtri scelti'}</h3><p>Puoi consultare un altro giorno o aprire la prossima partita.</p>${nextMatch()?`<button type="button" data-action="upcoming">Vai alla prossima gara →</button>`:''}`;
       return;
     }
-    const source=m.source?`<a href="${esc(m.source)}" target="_blank" rel="noopener">Fonte e aggiornamenti ↗</a>`:'';
-    $('tm-detail').innerHTML=`<span class="tm-eyebrow">${esc(status(m))} · ${esc(dateLabel(m.date,{weekday:'long',year:'numeric'}))}</span><h3>${esc(m.home)} <span>${m.result?esc(m.result):'–'}</span> ${esc(m.away)}</h3><p>${esc(meta(m))}${m.time?' · ⏰ '+esc(m.time):!m.result?' · Orario da confermare':''}</p>${m.notes?`<p class="tm-notes">${esc(m.notes)}</p>`:''}<div class="tm-actions">${source}<button type="button" data-action="share">↗ Condividi partita</button>${!m.result&&m.time&&m.date>=today?'<button type="button" data-action="ics">📅 Salva nel calendario</button>':''}${m===nextMatch()?'<button type="button" data-action="prediction">🔮 Pronostica in Community</button>':''}</div>`;
+    const primarySource=m.source?`<a href="${esc(m.source)}" target="_blank" rel="noopener">Fonte e aggiornamenti ↗</a>`:'';
+    const secondarySource=m.secondarySource?`<a href="${esc(m.secondarySource)}" target="_blank" rel="noopener">${esc(m.secondarySourceLabel)} ↗</a>`:'';
+    $('tm-detail').innerHTML=`<span class="tm-eyebrow">${esc(status(m))} · ${esc(dateLabel(m.date,{weekday:'long',year:'numeric'}))}</span><h3>${esc(m.home)} <span>${m.result?esc(m.result):'–'}</span> ${esc(m.away)}</h3><p>${esc(meta(m))}${m.time?' · ⏰ '+esc(m.time):!m.result?' · Orario da confermare':''}</p>${m.notes?`<p class="tm-notes">${esc(m.notes)}</p>`:''}<div class="tm-actions">${primarySource}${secondarySource}<button type="button" data-action="share">↗ Condividi partita</button>${!m.result&&m.time&&m.date>=today?'<button type="button" data-action="ics">📅 Salva nel calendario</button>':''}${m===nextMatch()?'<button type="button" data-action="prediction">🔮 Pronostica in Community</button>':''}</div>`;
     const videos=matchVideos(m);
     if(videos.length){
       const section=document.createElement('section');
