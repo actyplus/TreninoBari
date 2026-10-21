@@ -15,7 +15,7 @@
     const time = parts.find(p => /^\d{2}:\d{2}$/.test(p)) || '';
     const competition = parts[1] && !/^(?:finale|\d+-\d+)/i.test(parts[1]) ? parts[1] : 'Serie C';
     return {date:day.dataset.date,home:teams[0],away:teams[1],competition,time,
-      source:safeURL(day.dataset.source),round:day.dataset.round || '',result:day.dataset.result || titleResult,notes:''};
+      source:safeURL(day.dataset.source),round:day.dataset.round || '',result:day.dataset.result || titleResult,notes:day.dataset.note || ''};
   }).filter(m => m.home && m.away).sort((a,b)=>a.date.localeCompare(b.date));
   view.querySelectorAll('.match-row[data-date]').forEach(row => {
     const m = matches.find(m=>m.date===row.dataset.date && row.querySelector('.match-main b')?.textContent.trim()===m.home+' - '+m.away);
