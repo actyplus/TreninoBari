@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-10-27T22:00:00+01:00",
+  "verifiedAt": "2026-10-28T19:03:00+01:00",
   "fixtures": [
     {
       "id": "2026-10-31-bari-scafatese",
@@ -7,7 +7,14 @@
       "away": "Scafatese",
       "kickoff": "2026-10-31T14:30:00+01:00",
       "source": "https://www.sscalciobari.it/it/news/7480-bari-scafatese-le-info-utili/",
-      "competition": "Serie C"
+      "competition": "Serie C",
+      "coverage": {
+        "access": "paid",
+        "provider": "Sky Sport e NOW",
+        "source": "https://www.seriec.com/",
+        "sourceName": "Lega Serie C",
+        "confirmedAt": "2026-10-28T19:03:00+01:00"
+      }
     },
     {
       "id": "2026-11-09-picerno-bari",
