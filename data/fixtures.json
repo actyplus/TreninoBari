@@ -1,13 +1,20 @@
 {
-  "verifiedAt": "2026-10-31T18:55:00+01:00",
+  "verifiedAt": "2026-11-01T09:55:00+01:00",
   "fixtures": [
     {
       "id": "2026-11-09-picerno-bari",
       "home": "Picerno",
       "away": "Bari",
-      "kickoff": "2026-11-09T20:30:00+01:00",
-      "source": "https://www.sscalciobari.it/it/news/7386-/",
-      "competition": "Serie C"
+      "kickoff": "2026-11-09T20:45:00+01:00",
+      "source": "https://www.seriec.com/",
+      "competition": "Serie C",
+      "coverage": {
+        "access": "free-link",
+        "provider": "Rai Sport",
+        "source": "https://www.seriec.com/",
+        "sourceName": "Lega Serie C",
+        "confirmedAt": "2026-11-01T09:55:00+01:00"
+      }
     },
     {
       "id": "2026-11-14-bari-foggia",
