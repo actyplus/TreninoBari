@@ -1,19 +1,19 @@
 {
-  "verifiedAt": "2026-11-01T09:55:00+01:00",
+  "verifiedAt": "2026-11-02T13:04:00+01:00",
   "fixtures": [
     {
       "id": "2026-11-09-picerno-bari",
       "home": "Picerno",
       "away": "Bari",
       "kickoff": "2026-11-09T20:45:00+01:00",
-      "source": "https://www.seriec.com/",
+      "source": "https://www.sscalciobari.it/it/news/7518-lega-pro-seriec-az-picerno-bari-ore-20-45-in-diretta-su-raisport/",
       "competition": "Serie C",
       "coverage": {
         "access": "free-link",
         "provider": "Rai Sport",
-        "source": "https://www.seriec.com/",
-        "sourceName": "Lega Serie C",
-        "confirmedAt": "2026-11-01T09:55:00+01:00"
+        "source": "https://www.sscalciobari.it/it/news/7518-lega-pro-seriec-az-picerno-bari-ore-20-45-in-diretta-su-raisport/",
+        "sourceName": "SSC Bari",
+        "confirmedAt": "2026-11-02T13:04:00+01:00"
       }
     },
     {
@@ -21,7 +21,7 @@
       "home": "Bari",
       "away": "Foggia",
       "kickoff": "2026-11-14T17:30:00+01:00",
-      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "source": "https://www.sscalciobari.it/it/news/7518-lega-pro-seriec-az-picerno-bari-ore-20-45-in-diretta-su-raisport/",
       "competition": "Serie C"
     },
     {
@@ -29,7 +29,7 @@
       "home": "Catania",
       "away": "Bari",
       "kickoff": "2026-11-22T15:00:00+01:00",
-      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "source": "https://www.sscalciobari.it/it/news/7518-lega-pro-seriec-az-picerno-bari-ore-20-45-in-diretta-su-raisport/",
       "competition": "Serie C"
     },
     {
@@ -37,7 +37,7 @@
       "home": "Bari",
       "away": "Savoia",
       "kickoff": "2026-11-29T17:30:00+01:00",
-      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "source": "https://www.sscalciobari.it/it/news/7518-lega-pro-seriec-az-picerno-bari-ore-20-45-in-diretta-su-raisport/",
       "competition": "Serie C"
     },
     {
@@ -45,7 +45,7 @@
       "home": "Inter U23",
       "away": "Bari",
       "kickoff": "2026-12-05T14:30:00+01:00",
-      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "source": "https://www.sscalciobari.it/it/news/7518-lega-pro-seriec-az-picerno-bari-ore-20-45-in-diretta-su-raisport/",
       "competition": "Serie C"
     },
     {
@@ -53,7 +53,7 @@
       "home": "Bari",
       "away": "Monopoli",
       "kickoff": "2026-12-13T17:30:00+01:00",
-      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "source": "https://www.sscalciobari.it/it/news/7518-lega-pro-seriec-az-picerno-bari-ore-20-45-in-diretta-su-raisport/",
       "competition": "Serie C"
     },
     {
@@ -61,7 +61,7 @@
       "home": "Audace Cerignola",
       "away": "Bari",
       "kickoff": "2026-12-19T17:30:00+01:00",
-      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "source": "https://www.sscalciobari.it/it/news/7518-lega-pro-seriec-az-picerno-bari-ore-20-45-in-diretta-su-raisport/",
       "competition": "Serie C"
     },
     {
@@ -69,7 +69,7 @@
       "home": "Cavese",
       "away": "Bari",
       "kickoff": "2027-01-03T12:30:00+01:00",
-      "source": "https://www.sscalciobari.it/it/news/7386-/",
+      "source": "https://www.sscalciobari.it/it/news/7518-lega-pro-seriec-az-picerno-bari-ore-20-45-in-diretta-su-raisport/",
       "competition": "Serie C"
     }
   ]
