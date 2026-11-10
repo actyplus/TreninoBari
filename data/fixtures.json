@@ -1,21 +1,6 @@
 {
-  "verifiedAt": "2026-11-06T15:55:00+01:00",
+  "verifiedAt": "2026-11-10T07:57:00+01:00",
   "fixtures": [
-    {
-      "id": "2026-11-09-picerno-bari",
-      "home": "Picerno",
-      "away": "Bari",
-      "kickoff": "2026-11-09T20:45:00+01:00",
-      "source": "https://www.sscalciobari.it/it/news/7518-lega-pro-seriec-az-picerno-bari-ore-20-45-in-diretta-su-raisport/",
-      "competition": "Serie C",
-      "coverage": {
-        "access": "free-link",
-        "provider": "Rai Sport",
-        "source": "https://www.sscalciobari.it/it/news/7518-lega-pro-seriec-az-picerno-bari-ore-20-45-in-diretta-su-raisport/",
-        "sourceName": "SSC Bari",
-        "confirmedAt": "2026-11-02T13:04:00+01:00"
-      }
-    },
     {
       "id": "2026-11-14-bari-foggia",
       "home": "Bari",
