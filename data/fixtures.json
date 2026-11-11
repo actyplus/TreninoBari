@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-11-10T07:57:00+01:00",
+  "verifiedAt": "2026-11-11T22:03:00+01:00",
   "fixtures": [
     {
       "id": "2026-11-14-bari-foggia",
@@ -7,7 +7,23 @@
       "away": "Foggia",
       "kickoff": "2026-11-14T17:30:00+01:00",
       "source": "https://www.sscalciobari.it/it/news/7530-bari-foggia-le-info-utili/",
-      "competition": "Serie C"
+      "competition": "Serie C",
+      "coverage": {
+        "provider": "Antenna Sud · canale 14 DTT",
+        "access": "free-tv",
+        "note": "Diretta TV gratuita in Puglia e Basilicata. Nessuno streaming gratuito annunciato da Antenna Sud; online tramite NOW per gli abbonati.",
+        "source": "https://www.labaricalcio.it/2026/11/11/bari-foggia-in-diretta-tv-e-streaming-la-partita-in-chiaro/",
+        "paid": [
+          {
+            "name": "NOW",
+            "url": "https://www.nowtv.it/sport/calcio/serie-c"
+          },
+          {
+            "name": "Sky Sport",
+            "url": "https://www.sky.it/tv/sport"
+          }
+        ]
+      }
     },
     {
       "id": "2026-11-22-catania-bari",
