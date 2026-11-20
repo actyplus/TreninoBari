@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-11-17T07:00:00+01:00",
+  "verifiedAt": "2026-11-20T19:04:00+01:00",
   "fixtures": [
     {
       "id": "2026-11-22-catania-bari",
@@ -7,7 +7,15 @@
       "away": "Bari",
       "kickoff": "2026-11-22T15:00:00+01:00",
       "source": "https://www.cataniafc.it/it/notizie/dalle-ore-1000-di-oggi-in-vendita-i-tagliandi-validi-per-assistere-a-catania-bari/",
-      "competition": "Serie C"
+      "competition": "Serie C",
+      "coverage": {
+        "access": "paid",
+        "provider": "Sky Sport Calcio / NOW",
+        "source": "https://sport.sky.it/calcio/serie-c/2026/11/20/serie-c-partite-sky-giornata-15",
+        "sourceName": "Sky Sport",
+        "confirmedAt": "2026-11-20T19:04:00+01:00",
+        "note": "Diretta su Sky Sport Calcio e Sky Sport 252; streaming su NOW con abbonamento."
+      }
     },
     {
       "id": "2026-11-29-bari-savoia",
