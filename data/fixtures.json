@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-11-20T19:04:00+01:00",
+  "verifiedAt": "2026-11-21T13:04:00+01:00",
   "fixtures": [
     {
       "id": "2026-11-22-catania-bari",
@@ -15,6 +15,16 @@
         "sourceName": "Sky Sport",
         "confirmedAt": "2026-11-20T19:04:00+01:00",
         "note": "Diretta su Sky Sport Calcio e Sky Sport 252; streaming su NOW con abbonamento."
+      },
+      "replay": {
+        "mode": "delayed",
+        "provider": "Teleregione",
+        "channel": "77",
+        "scheduledAt": "2026-11-23T14:45:00+01:00",
+        "source": "https://www.tuttocalciopuglia.com/primo-piano/calcio-in-tv-dirette-e-differite-su-antenna-sud-teleregione-e-antenna-sud-extra-83049",
+        "sourceName": "TuttoCalcioPuglia",
+        "confirmedAt": "2026-11-21T13:04:00+01:00",
+        "note": "Differita televisiva su Teleregione, canale 77."
       }
     },
     {
