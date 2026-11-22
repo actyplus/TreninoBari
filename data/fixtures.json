@@ -1,12 +1,12 @@
 {
-  "verifiedAt": "2026-11-22T18:56:00+01:00",
+  "verifiedAt": "2026-11-22T22:03:00+01:00",
   "fixtures": [
     {
       "id": "2026-11-29-bari-savoia",
       "home": "Bari",
       "away": "Savoia",
       "kickoff": "2026-11-29T17:30:00+01:00",
-      "source": "https://www.sscalciobari.it/it/news/7518-lega-pro-seriec-az-picerno-bari-ore-20-45-in-diretta-su-raisport/",
+      "source": "https://www.seriec.com/gironi/girone-c",
       "competition": "Serie C"
     },
     {
