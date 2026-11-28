@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-11-26T18:59:00+01:00",
+  "verifiedAt": "2026-11-28T10:03:00+01:00",
   "fixtures": [
     {
       "id": "2026-11-29-bari-savoia",
@@ -7,7 +7,25 @@
       "away": "Savoia",
       "kickoff": "2026-11-29T17:30:00+01:00",
       "source": "https://www.seriec.com/gironi/girone-c",
-      "competition": "Serie C"
+      "competition": "Serie C",
+      "coverage": {
+        "access": "paid",
+        "provider": "Sky Sport 252 e NOW",
+        "source": "https://sport.sky.it/calcio/serie-c/2026/11/27/serie-c-partite-sky-giornata-16",
+        "sourceName": "Sky Sport",
+        "confirmedAt": "2026-11-28T10:03:00+01:00",
+        "note": "Diretta su Sky Sport 252 e in streaming su NOW; visione riservata agli abbonati.",
+        "paid": [
+          {
+            "name": "Sky Sport 252",
+            "url": "https://sport.sky.it/"
+          },
+          {
+            "name": "NOW",
+            "url": "https://www.nowtv.it/sport/calcio/serie-c"
+          }
+        ]
+      }
     },
     {
       "id": "2026-12-05-inter-u23-bari",
